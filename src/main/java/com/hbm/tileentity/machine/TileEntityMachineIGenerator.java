@@ -24,13 +24,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
@@ -148,34 +151,23 @@ public class TileEntityMachineIGenerator extends TileEntityMachineBase implement
 			}
 		}
 	}
-	/*
-	private void updateConnections() {
-		int facing = this.getBlockMetadata() - BlockDummyable.offset;
-		
-		switch(facing){
-			case 2://north
-				this.trySubscribe(world, pos.add(0, 0, 2), Library.POS_Z);
-				this.trySubscribe(world, pos.add(1, 0, 2), Library.POS_Z);
-				this.trySubscribe(world, pos.add(0, 0, -3), Library.NEG_Z);
-				this.trySubscribe(world, pos.add(1, 0, -3), Library.NEG_Z);
-			case 3://south
-				this.trySubscribe(world, pos.add(0, 0, -2), Library.NEG_Z);
-				this.trySubscribe(world, pos.add(-1, 0, -2), Library.NEG_Z);
-				this.trySubscribe(world, pos.add(0, 0, 3), Library.POS_Z);
-				this.trySubscribe(world, pos.add(-1, 0, 3), Library.POS_Z);
-			case 4://west
-				this.trySubscribe(world, pos.add(2, 0, 0), Library.POS_X);
-				this.trySubscribe(world, pos.add(2, 0, -1), Library.POS_X);
-				this.trySubscribe(world, pos.add(-3, 0, 0), Library.NEG_X);
-				this.trySubscribe(world, pos.add(-3, 0, -1), Library.NEG_X);		
-			case 5://east
-				this.trySubscribe(world, pos.add(-2, 0, 0), Library.NEG_X);
-				this.trySubscribe(world, pos.add(-2, 0, 1), Library.NEG_X);
-				this.trySubscribe(world, pos.add(3, 0, 0), Library.POS_X);
-				this.trySubscribe(world, pos.add(3, 0, 1), Library.POS_X);
+
+	@Override
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+		if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+			return true;
 		}
+		return super.hasCapability(capability, facing);
 	}
-	*/
+
+	@Override
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+		if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+			return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(this);
+		}
+		return super.getCapability(capability, facing);
+	}
+
 	@Override
 	public void networkUnpack(NBTTagCompound nbt) {
 		int[] rtgs = nbt.getIntArray("rtgs");
@@ -453,12 +445,16 @@ public class TileEntityMachineIGenerator extends TileEntityMachineBase implement
 
 	@Override
 	public int fill(FluidStack resource, boolean doFill) {
-		if(resource != null){
-			if(resource.getFluid() == tankTypes[0]){
+		if (resource != null) {
+			//System.out.println("Filling fluid: " + resource.getFluid().getName());
+			if (resource.getFluid() == tankTypes[0]) {
+				//System.out.println("Filling tank 0 with water");
 				return tanks[0].fill(resource, doFill);
-			} else if(fluidHeat.get(resource.getFluid()) > 0){
+			} else if (fluidHeat.containsKey(resource.getFluid())) {
+				//System.out.println("Filling tank 1 with heating oil");
 				return tanks[1].fill(resource, doFill);
-			} else if(resource.getFluid() == tankTypes[2]){
+			} else if (resource.getFluid() == tankTypes[2]) {
+				//System.out.println("Filling tank 2 with lubricant");
 				return tanks[2].fill(resource, doFill);
 			}
 		}
