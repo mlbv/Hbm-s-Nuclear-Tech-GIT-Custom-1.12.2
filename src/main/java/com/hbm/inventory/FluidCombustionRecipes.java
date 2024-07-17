@@ -33,7 +33,7 @@ public class FluidCombustionRecipes {
 		addBurnableFluid(ModForgeFluids.smear, 50);
 		addBurnableFluid(ModForgeFluids.ethanol, 75);
 		addBurnableFluid(ModForgeFluids.reclaimed, 100);
-		addBurnableFluid(ModForgeFluids.petroil, 125);
+		addBurnableFluid(ModForgeFluids.fuel_light, 125);
 		addBurnableFluid(ModForgeFluids.naphtha, 125);
 		addBurnableFluid(ModForgeFluids.heatingoil, 150);
 		addBurnableFluid(ModForgeFluids.biofuel, 150);

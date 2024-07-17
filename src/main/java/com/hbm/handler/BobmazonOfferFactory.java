@@ -55,7 +55,7 @@ public class BobmazonOfferFactory {
 		materials.add(new Offer(new ItemStack(ModItems.lignite), Requirement.STEEL, 2 * inflation));
 		materials.add(new Offer(ItemFluidCanister.getFullCanister(ModForgeFluids.oil), Requirement.OIL, 4 * inflation));
 		materials.add(new Offer(ItemFluidCanister.getFullCanister(ModForgeFluids.diesel), Requirement.OIL, 16 * inflation));
-		materials.add(new Offer(ItemFluidCanister.getFullCanister(ModForgeFluids.petroil), Requirement.OIL, 12 * inflation));
+		materials.add(new Offer(ItemFluidCanister.getFullCanister(ModForgeFluids.fuel_light), Requirement.OIL, 12 * inflation));
 		materials.add(new Offer(ItemFluidCanister.getFullCanister(ModForgeFluids.kerosene), Requirement.OIL, 20 * inflation));
 		materials.add(new Offer(ItemFluidCanister.getFullCanister(ModForgeFluids.nitan), Requirement.OIL, 100 * inflation));
 		materials.add(new Offer(ItemGasCanister.getFullCanister(ModForgeFluids.gas), Requirement.OIL, 8 * inflation));

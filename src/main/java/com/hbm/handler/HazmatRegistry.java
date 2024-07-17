@@ -9,6 +9,9 @@ import com.hbm.items.ModItems;
 import com.hbm.items.armor.ItemModCladding;
 import com.hbm.lib.Library;
 import com.hbm.potion.HbmPotion;
+import com.hbm.util.ArmorRegistry;
+import com.hbm.util.ArmorRegistry.HazardClass;
+import com.hbm.util.Compat;
 
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.entity.EntityLivingBase;
@@ -247,5 +250,91 @@ public class HazmatRegistry {
 		HazmatRegistry.registerHazmat(ModItems.euphemium_plate, fixRounding(euph * chest));
 		HazmatRegistry.registerHazmat(ModItems.euphemium_legs, fixRounding(euph * legs));
 		HazmatRegistry.registerHazmat(ModItems.euphemium_boots, fixRounding(euph * boots));
+		/*
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER1_SPACE_SUIT_HELMET, fixRounding(hazRed * helmet));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER1_SPACE_SUIT_CHEST, fixRounding(hazRed * chest));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER1_SPACE_SUIT_JETPACK_CHEST, fixRounding(hazRed * chest));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER1_SPACE_SUIT_LEGGINGS, fixRounding(hazRed * legs));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER1_SPACE_SUIT_BOOTS, fixRounding(hazRed * boots));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER1_SPACE_SUIT_GRAVITY_BOOTS, fixRounding(hazRed * boots));
+
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER2_SPACE_SUIT_HELMET, fixRounding(hazGray * helmet));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER2_SPACE_SUIT_CHEST, fixRounding(hazGray * chest));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER2_SPACE_SUIT_JETPACK_CHEST, fixRounding(hazGray * chest));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER2_SPACE_SUIT_LEGGINGS, fixRounding(hazGray * legs));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER2_SPACE_SUIT_BOOTS, fixRounding(hazGray * boots));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER2_SPACE_SUIT_GRAVITY_BOOTS, fixRounding(hazGray * boots));
+		
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER3_SPACE_SUIT_HELMET, fixRounding(liquidator * helmet));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER3_SPACE_SUIT_CHEST, fixRounding(liquidator * chest));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER3_SPACE_SUIT_JETPACK_CHEST, fixRounding(liquidator * chest));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER3_SPACE_SUIT_LEGGINGS, fixRounding(liquidator * legs));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER3_SPACE_SUIT_BOOTS, fixRounding(liquidator * boots));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER3_SPACE_SUIT_GRAVITY_BOOTS, fixRounding(liquidator * boots));
+
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER4_SPACE_SUIT_HELMET, fixRounding(paa * helmet));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER4_SPACE_SUIT_CHEST, fixRounding(paa * chest));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER4_SPACE_SUIT_JETPACK_CHEST, fixRounding(paa * chest));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER4_SPACE_SUIT_LEGGINGS, fixRounding(paa * legs));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER4_SPACE_SUIT_BOOTS, fixRounding(paa * boots));
+		HazmatRegistry.registerHazmat(ModItems.EXTRAPLANETS_TIER4_SPACE_SUIT_GRAVITY_BOOTS, fixRounding(paa * boots));
+
+		HazmatRegistry.registerHazmat(ModItems.GALAXYSPACE_SPACE_SUIT_HEAD, fixRounding(hazRed * helmet));
+		HazmatRegistry.registerHazmat(ModItems.GALAXYSPACE_SPACE_SUIT_CHEST, fixRounding(hazRed * chest));
+		HazmatRegistry.registerHazmat(ModItems.GALAXYSPACE_SPACE_SUIT_LEGS, fixRounding(hazRed * legs));
+		HazmatRegistry.registerHazmat(ModItems.GALAXYSPACE_SPACE_SUIT_FEET, fixRounding(hazRed * boots));
+
+		HazmatRegistry.registerHazmat(ModItems.GALAXYSPACE_SPACE_SUIT_LIGHT_HEAD, fixRounding(hazRed * helmet));
+		HazmatRegistry.registerHazmat(ModItems.GALAXYSPACE_SPACE_SUIT_LIGHT_CHEST, fixRounding(hazRed * chest));
+		HazmatRegistry.registerHazmat(ModItems.GALAXYSPACE_SPACE_SUIT_LIGHT_LEGS, fixRounding(hazRed * legs));
+		HazmatRegistry.registerHazmat(ModItems.GALAXYSPACE_SPACE_SUIT_LIGHT_FEET, fixRounding(hazRed * boots));
+		*/
+		registerIfExists("extraplanets", "tier0_space_suit_helmet", hazYellow * helmet);
+		registerIfExists("extraplanets", "tier0_space_suit_chest", hazYellow * chest);
+		registerIfExists("extraplanets", "tier0_space_suit_legings", hazYellow * legs);
+		registerIfExists("extraplanets", "tier0_space_suit_boots", hazYellow * boots);
+
+		registerIfExists("extraplanets", "tier1_space_suit_helmet", hazRed * helmet);
+		registerIfExists("extraplanets", "tier1_space_suit_chest", hazRed * chest);
+		registerIfExists("extraplanets", "tier1_space_suit_jetpack_chest", hazRed * chest);
+		registerIfExists("extraplanets", "tier1_space_suit_legings", hazRed * legs);
+		registerIfExists("extraplanets", "tier1_space_suit_boots", hazRed * boots);
+		registerIfExists("extraplanets", "tier1_space_suit_gravity_boots", hazRed * boots);
+
+		registerIfExists("extraplanets", "tier2_space_suit_helmet", hazGray * helmet);
+		registerIfExists("extraplanets", "tier2_space_suit_chest", hazGray * chest);
+		registerIfExists("extraplanets", "tier2_space_suit_jetpack_chest", hazGray * chest);
+		registerIfExists("extraplanets", "tier2_space_suit_legings", hazGray * legs);
+		registerIfExists("extraplanets", "tier2_space_suit_boots", hazGray * boots);
+		registerIfExists("extraplanets", "tier2_space_suit_gravity_boots", hazGray * boots);
+
+		registerIfExists("extraplanets", "tier3_space_suit_helmet", liquidator * helmet);
+		registerIfExists("extraplanets", "tier3_space_suit_chest", liquidator * chest);
+		registerIfExists("extraplanets", "tier3_space_suit_jetpack_chest", liquidator * chest);
+		registerIfExists("extraplanets", "tier3_space_suit_legings", liquidator * legs);
+		registerIfExists("extraplanets", "tier3_space_suit_boots", liquidator * boots);
+		registerIfExists("extraplanets", "tier3_space_suit_gravity_boots", liquidator * boots);
+
+		registerIfExists("extraplanets", "tier4_space_suit_helmet", paa * helmet);
+		registerIfExists("extraplanets", "tier4_space_suit_chest", paa * chest);
+		registerIfExists("extraplanets", "tier4_space_suit_jetpack_chest", paa * chest);
+		registerIfExists("extraplanets", "tier4_space_suit_legings", paa * legs);
+		registerIfExists("extraplanets", "tier4_space_suit_boots", paa * boots);
+		registerIfExists("extraplanets", "tier4_space_suit_gravity_boots", paa * boots);
+
+		registerIfExists("galaxyspace","space_suit_head", hazRed * helmet);
+		registerIfExists("galaxyspace","space_suit_chest", hazRed * chest);
+		registerIfExists("galaxyspace","space_suit_legs", hazRed * legs);
+		registerIfExists("galaxyspace","space_suit_feet", hazRed * boots);
+
+		registerIfExists("galaxyspace","space_suit_light_head", hazYellow * helmet);
+		registerIfExists("galaxyspace","space_suit_light_chest", hazYellow * chest);
+		registerIfExists("galaxyspace","space_suit_light_legs", hazYellow * legs);
+		registerIfExists("galaxyspace","space_suit_light_feet", hazYellow * boots);
+	}
+	private static void registerIfExists(String domain, String name, double value) {
+		Item item = Compat.tryLoadItem(domain, name);
+		if(item != null)
+			HazmatRegistry.registerHazmat(item, fixRounding(value));
 	}
 }

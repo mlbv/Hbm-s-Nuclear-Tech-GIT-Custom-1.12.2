@@ -53,7 +53,7 @@ public class ChemplantRecipes {
 		}
 		makeRecipe(40, "FR_REOIL", null, new FluidStack[]{ new FluidStack(ModForgeFluids.smear, 1000) }, null, new FluidStack[]{ new FluidStack(ModForgeFluids.reclaimed, 800) }, 30);
 		
-		makeRecipe(50, "FR_PETROIL", null, new FluidStack[]{ new FluidStack(ModForgeFluids.reclaimed, 800), new FluidStack(ModForgeFluids.lubricant, 200) }, null, new FluidStack[]{ new FluidStack(ModForgeFluids.petroil, 1000) }, 30);
+		makeRecipe(50, "FR_PETROIL", null, new FluidStack[]{ new FluidStack(ModForgeFluids.reclaimed, 800), new FluidStack(ModForgeFluids.lubricant, 200) }, null, new FluidStack[]{ new FluidStack(ModForgeFluids.fuel_light, 1000) }, 30);
 		
 		makeRecipe(60, "FC_BITUMEN", null, new FluidStack[]{ new FluidStack(ModForgeFluids.bitumen, 1200), new FluidStack(ModForgeFluids.steam, 2400) }, null, new FluidStack[]{ new FluidStack(ModForgeFluids.oil, 1000), new FluidStack(ModForgeFluids.petroleum, 200) }, 100);
 		
@@ -85,7 +85,7 @@ public class ChemplantRecipes {
 		
 		makeRecipe(200, "SF_RECLAIMED", null, new FluidStack[]{ new FluidStack(ModForgeFluids.reclaimed, 200) }, new AStack[] { new ComparableStack(ModItems.solid_fuel, 2) }, null, 20);
 		
-		makeRecipe(210, "SF_PETROIL", null, new FluidStack[]{ new FluidStack(ModForgeFluids.petroil, 250) }, new AStack[] { new ComparableStack(ModItems.solid_fuel, 2) }, null, 20);
+		makeRecipe(210, "SF_PETROIL", null, new FluidStack[]{ new FluidStack(ModForgeFluids.fuel_light, 250) }, new AStack[] { new ComparableStack(ModItems.solid_fuel, 2) }, null, 20);
 		
 		makeRecipe(220, "SF_LUBRICANT", null, new FluidStack[]{ new FluidStack(ModForgeFluids.lubricant, 250) }, new AStack[] { new ComparableStack(ModItems.solid_fuel, 2) }, null, 20);
 		
@@ -219,7 +219,7 @@ public class ChemplantRecipes {
 		
 		makeRecipe(850, "TEL", new AStack[] {new OreDictStack(KEY_OIL_TAR, 1), new OreDictStack(PB.dust(), 1) }, new FluidStack[]{ new FluidStack(ModForgeFluids.petroleum, 100), new FluidStack(ModForgeFluids.steam, 1000) }, new AStack[] { new ComparableStack(ModItems.antiknock, 1) }, null, 40);
 		
-		makeRecipe(860, "GASOLINE", new AStack[] {new ComparableStack(ModItems.antiknock, 1) }, new FluidStack[]{ new FluidStack(ModForgeFluids.petroil, 10000) }, null, new FluidStack[]{ new FluidStack(ModForgeFluids.gasoline, 12000) }, 40);
+		makeRecipe(860, "GASOLINE", new AStack[] {new ComparableStack(ModItems.antiknock, 1) }, new FluidStack[]{ new FluidStack(ModForgeFluids.fuel_light, 10000) }, null, new FluidStack[]{ new FluidStack(ModForgeFluids.gasoline, 12000) }, 40);
 		
 		makeRecipe(870, "FRACKSOL", new AStack[] { new OreDictStack(S.dust()) }, new FluidStack[]{ new FluidStack(ModForgeFluids.petroleum, 100), new FluidStack(FluidRegistry.WATER, 1000) }, null, new FluidStack[]{ new FluidStack(ModForgeFluids.fracksol, 1000) }, 20);
 		

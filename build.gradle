@@ -139,6 +139,8 @@ dependencies {
     compileOnly files("libs/Baubles-${version_baubles}.jar")
 
     compileOnly files("libs/RedstoneFlux-1.12-${version_redstoneflux}-universal.jar")
+
+    compileOnly files("libs/buildcraft-all-7.99.24.8.jar")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

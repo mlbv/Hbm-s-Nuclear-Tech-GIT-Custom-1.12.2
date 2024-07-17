@@ -131,6 +131,11 @@ public class ModForgeFluids {
 	public static Fluid corium_fluid = new CoriumFluid().setDensity(31200).setViscosity(2000).setTemperature(3000);
 	public static Fluid volcanic_lava_fluid = new VolcanicFluid().setLuminosity(15).setDensity(3000).setViscosity(3000).setTemperature(1300);
 	
+	//Buildcraft compatibility
+	public static Fluid fuel_dense = FluidRegistry.getFluid("fuel_dense");
+	public static Fluid fuel_gaseous = FluidRegistry.getFluid("fuel_gaseous");
+	public static Fluid fuel_light = FluidRegistry.getFluid("fuel_light");
+
 	public static void init() {
 		if(!FluidRegistry.registerFluid(spentsteam))
 			spentsteam = FluidRegistry.getFluid("spentsteam");

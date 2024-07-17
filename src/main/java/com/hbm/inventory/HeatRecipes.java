@@ -42,8 +42,8 @@ public class HeatRecipes {
 		addBoilRecipe("oil_medium", 1, "hotoil", 1, 300);
 		addBoilRecipe("oilgc", 1, "hotoil", 1, 300); //galacticraft
 		addBoilRecipe("biofuel", 1, "fuel", 1, 100); //galacticraft & industrialforegoing
-		addBoilRecipe("petroil", 1, "fuel", 1, 100); //galacticraft
-		addBoilRecipe("refined_fuel", 1, "petroil", 1, 100); //thermalfoundation
+		addBoilRecipe("fuel_light", 1, "fuel", 1, 100); //galacticraft
+		addBoilRecipe("refined_fuel", 1, "fuel_light", 1, 100); //thermalfoundation
 		addBoilRecipe("sulphuricacid", 1, "sulfuric_acid", 1, 100); //galacticraft
 		addBoilRecipe("sulfuricacid", 1, "sulfuric_acid", 1, 100); //mekanism 
 		addBoilAndCoolRecipe("liquidoxygen", 1, "oxygen", 1, 1); //mekanism

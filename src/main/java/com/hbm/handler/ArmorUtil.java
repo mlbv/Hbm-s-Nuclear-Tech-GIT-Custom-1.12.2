@@ -68,6 +68,11 @@ public class ArmorUtil {
 		registerIfExists("gregtech", "gt.armor.hazmat.universal.head", HazardClass.PARTICLE_COARSE, HazardClass.PARTICLE_FINE, HazardClass.GAS_CHLORINE, HazardClass.BACTERIA, HazardClass.GAS_MONOXIDE, HazardClass.LIGHT, HazardClass.SAND);
 		registerIfExists("gregtech", "gt.armor.hazmat.biochemgas.head", HazardClass.PARTICLE_COARSE, HazardClass.PARTICLE_FINE, HazardClass.GAS_CHLORINE, HazardClass.BACTERIA, HazardClass.GAS_MONOXIDE, HazardClass.LIGHT, HazardClass.SAND);
 		registerIfExists("gregtech", "gt.armor.hazmat.radiation.head", HazardClass.PARTICLE_COARSE, HazardClass.PARTICLE_FINE, HazardClass.GAS_CHLORINE, HazardClass.BACTERIA, HazardClass.GAS_MONOXIDE, HazardClass.LIGHT, HazardClass.SAND);
+		registerIfExists("extraplanets", "tier1_space_suit_helmet", HazardClass.PARTICLE_COARSE, HazardClass.PARTICLE_FINE, HazardClass.GAS_CHLORINE, HazardClass.BACTERIA, HazardClass.GAS_MONOXIDE, HazardClass.LIGHT, HazardClass.SAND);
+		registerIfExists("extraplanets", "tier2_space_suit_helmet", HazardClass.PARTICLE_COARSE, HazardClass.PARTICLE_FINE, HazardClass.GAS_CHLORINE, HazardClass.BACTERIA, HazardClass.GAS_MONOXIDE, HazardClass.LIGHT, HazardClass.SAND);
+		registerIfExists("extraplanets", "tier3_space_suit_helmet", HazardClass.PARTICLE_COARSE, HazardClass.PARTICLE_FINE, HazardClass.GAS_CHLORINE, HazardClass.BACTERIA, HazardClass.GAS_MONOXIDE, HazardClass.LIGHT, HazardClass.SAND);
+		registerIfExists("extraplanets", "tier4_space_suit_helmet", HazardClass.PARTICLE_COARSE, HazardClass.PARTICLE_FINE, HazardClass.GAS_CHLORINE, HazardClass.BACTERIA, HazardClass.GAS_MONOXIDE, HazardClass.LIGHT, HazardClass.SAND);
+		registerIfExists("galaxyspace","space_suit_head", HazardClass.PARTICLE_COARSE, HazardClass.PARTICLE_FINE, HazardClass.GAS_CHLORINE, HazardClass.BACTERIA, HazardClass.GAS_MONOXIDE, HazardClass.LIGHT, HazardClass.SAND);
 	}
 	
 	private static void registerIfExists(String domain, String name, HazardClass... classes) {
@@ -202,7 +207,8 @@ public class ArmorUtil {
 			checkArmor(player, ModItems.hazmat_helmet_grey, ModItems.hazmat_plate_grey, ModItems.hazmat_legs_grey, ModItems.hazmat_boots_grey) || 
 			checkArmor(player, ModItems.hazmat_paa_helmet, ModItems.hazmat_paa_plate, ModItems.hazmat_paa_legs, ModItems.hazmat_paa_boots) ||
 			checkArmor(player, ModItems.paa_helmet, ModItems.paa_plate, ModItems.paa_legs, ModItems.paa_boots) ||
-			checkArmor(player, ModItems.liquidator_helmet, ModItems.liquidator_plate, ModItems.liquidator_legs, ModItems.liquidator_boots)){
+			checkArmor(player, ModItems.liquidator_helmet, ModItems.liquidator_plate, ModItems.liquidator_legs, ModItems.liquidator_boots)||
+			checkArmorSpaceSuit(player)){
 			return true;
 		}
 		return false;
@@ -214,8 +220,8 @@ public class ArmorUtil {
 			ArmorUtil.checkArmor(player, ModItems.hazmat_helmet_grey, ModItems.hazmat_plate_grey, ModItems.hazmat_legs_grey, ModItems.hazmat_boots_grey) || 
 			ArmorUtil.checkArmor(player, ModItems.t45_helmet, ModItems.t45_plate, ModItems.t45_legs, ModItems.t45_boots) || 
 			ArmorUtil.checkArmor(player, ModItems.schrabidium_helmet, ModItems.schrabidium_plate, ModItems.schrabidium_legs, ModItems.schrabidium_boots) || 
-			checkForHaz2(player)) {
-	
+			checkForHaz2(player)||
+			checkArmorSpaceSuit(player)) {
 			return true;
 		}
 	
@@ -229,6 +235,40 @@ public class ArmorUtil {
 	
 		if(ArmorUtil.checkArmor(player, ModItems.asbestos_helmet, ModItems.asbestos_plate, ModItems.asbestos_legs, ModItems.asbestos_boots)) {
 			return true;
+		}
+	
+		return false;
+	}
+
+	public static boolean checkArmorSpaceSuit(EntityLivingBase player) {
+		// 检查 extraplanets 宇航服
+		for (int tier = 1; tier <= 4; tier++) {
+			Item helmet = Compat.tryLoadItem("extraplanets", "tier" + tier + "_space_suit_helmet");
+			Item chest = Compat.tryLoadItem("extraplanets", "tier" + tier + "_space_suit_chest");
+			Item jetpackChest = Compat.tryLoadItem("extraplanets", "tier" + tier + "_space_suit_jetpack_chest");
+			Item legs = Compat.tryLoadItem("extraplanets", "tier" + tier + "_space_suit_legs");
+			Item boots = Compat.tryLoadItem("extraplanets", "tier" + tier + "_space_suit_boots");
+			Item gravityBoots = Compat.tryLoadItem("extraplanets", "tier" + tier + "_space_suit_gravity_boots");
+	
+			if ((checkArmor(player, helmet, chest, legs, boots) ||
+				checkArmor(player, helmet, jetpackChest, legs, boots) ||
+				checkArmor(player, helmet, chest, legs, gravityBoots) ||
+				checkArmor(player, helmet, jetpackChest, legs, gravityBoots))) {
+				return true;
+			}
+		}
+	
+		// 检查 galaxyspace 宇航服
+		String[] types = { "space_suit", "space_suit_light" };
+		for (String type : types) {
+			Item helmet = Compat.tryLoadItem("galaxyspace", type + "_helmet");
+			Item chest = Compat.tryLoadItem("galaxyspace", type + "_chest");
+			Item legs = Compat.tryLoadItem("galaxyspace", type + "_legs");
+			Item boots = Compat.tryLoadItem("galaxyspace", type + "_boots");
+	
+			if (checkArmor(player, helmet, chest, legs, boots)) {
+				return true;
+			}
 		}
 	
 		return false;

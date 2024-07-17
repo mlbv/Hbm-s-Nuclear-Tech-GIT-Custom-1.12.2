@@ -3,6 +3,8 @@ package com.hbm.tileentity.machine.oil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import com.hbm.blocks.ModBlocks;
 import com.hbm.forgefluid.FFUtils;
@@ -115,73 +117,129 @@ public abstract class TileEntityOilDrillBase extends TileEntityLoadedBase implem
     List<int[]> list = new ArrayList<int[]>();
     HashSet<BlockPos> processed = new HashSet<BlockPos>();
 
+/*
     public byte succ(int x, int y, int z) {
-
         list.clear();
-
-        succ1(x, y, z);
-        succ2(x, y, z);
-
-        if(!list.isEmpty()) {
-
+        processed.clear(); // 清空processed集合
+    
+        int maxDepth = 3000; // 设置递归深度阈值
+    
+        succ1(x, y, z, 0, maxDepth);
+        succ2(x, y, z, 0, maxDepth);
+    
+        if (!list.isEmpty()) {
             int i = world.rand.nextInt(list.size());
             int a = list.get(i)[0];
             int b = list.get(i)[1];
             int c = list.get(i)[2];
             BlockPos abc = new BlockPos(a, b, c);
-
-
-            if(world.getBlockState(abc).getBlock() == ModBlocks.ore_oil) {
-
+    
+            if (world.getBlockState(abc).getBlock() == ModBlocks.ore_oil) {
                 world.setBlockState(abc, ModBlocks.ore_oil_empty.getDefaultState());
                 return 1;
-            }
-            else if (world.getBlockState(abc).getBlock() == ModBlocks.ore_bedrock_oil) {
+            } else if (world.getBlockState(abc).getBlock() == ModBlocks.ore_bedrock_oil) {
                 return 2;
             }
         }
-
-        processed.clear();
-
+    
         return 0;
     }
+*/
 
-    public void succInit1(int x, int y, int z) {
-        succ1(x + 1, y, z);
-        succ1(x - 1, y, z);
-        succ1(x, y + 1, z);
-        succ1(x, y - 1, z);
-        succ1(x, y, z + 1);
-        succ1(x, y, z - 1);
+public byte succ(int x, int y, int z) {
+    list.clear();
+    processed.clear(); // 清空processed集合
+
+    bfsCheckOil(x, y, z);
+
+    if (!list.isEmpty()) {
+        int i = world.rand.nextInt(list.size());
+        int a = list.get(i)[0];
+        int b = list.get(i)[1];
+        int c = list.get(i)[2];
+        BlockPos abc = new BlockPos(a, b, c);
+
+        if (world.getBlockState(abc).getBlock() == ModBlocks.ore_oil) {
+            world.setBlockState(abc, ModBlocks.ore_oil_empty.getDefaultState());
+            return 1;
+        } else if (world.getBlockState(abc).getBlock() == ModBlocks.ore_bedrock_oil) {
+            return 2;
+        }
     }
 
-    public void succInit2(int x, int y, int z) {
-        succ2(x + 1, y, z);
-        succ2(x - 1, y, z);
-        succ2(x, y + 1, z);
-        succ2(x, y - 1, z);
-        succ2(x, y, z + 1);
-        succ2(x, y, z - 1);
+    return 0;
+}
+private void bfsCheckOil(int x, int y, int z) {
+    Queue<BlockPos> queue = new LinkedList<>();
+    queue.add(new BlockPos(x, y, z));
+
+    while (!queue.isEmpty()) {
+        BlockPos currentPos = queue.poll();
+        if (!processed.contains(currentPos)) {
+            processed.add(currentPos);
+
+            // 检查当前方块是否是目标方块类型
+            if (world.getBlockState(currentPos).getBlock() == ModBlocks.ore_oil || 
+                world.getBlockState(currentPos).getBlock() == ModBlocks.ore_bedrock_oil) {
+                list.add(new int[]{currentPos.getX(), currentPos.getY(), currentPos.getZ()});
+            }
+
+            // 如果是空油岩方块，则继续搜索相邻方块
+            if (world.getBlockState(currentPos).getBlock() == ModBlocks.ore_oil_empty) {
+                queue.add(new BlockPos(currentPos.getX() + 1, currentPos.getY(), currentPos.getZ()));
+                queue.add(new BlockPos(currentPos.getX() - 1, currentPos.getY(), currentPos.getZ()));
+                queue.add(new BlockPos(currentPos.getX(), currentPos.getY() + 1, currentPos.getZ()));
+                queue.add(new BlockPos(currentPos.getX(), currentPos.getY() - 1, currentPos.getZ()));
+                queue.add(new BlockPos(currentPos.getX(), currentPos.getY(), currentPos.getZ() + 1));
+                queue.add(new BlockPos(currentPos.getX(), currentPos.getY(), currentPos.getZ() - 1));
+            }
+        }
+    }
+}
+    public void succInit1(int x, int y, int z, int depth, int maxDepth) {
+        succ1(x + 1, y, z, depth, maxDepth);
+        succ1(x - 1, y, z, depth, maxDepth);
+        succ1(x, y + 1, z, depth, maxDepth);
+        succ1(x, y - 1, z, depth, maxDepth);
+        succ1(x, y, z + 1, depth, maxDepth);
+        succ1(x, y, z - 1, depth, maxDepth);
+    }
+    
+
+    public void succInit2(int x, int y, int z, int depth, int maxDepth) {
+        succ2(x + 1, y, z, depth, maxDepth);
+        succ2(x - 1, y, z, depth, maxDepth);
+        succ2(x, y + 1, z, depth, maxDepth);
+        succ2(x, y - 1, z, depth, maxDepth);
+        succ2(x, y, z + 1, depth, maxDepth);
+        succ2(x, y, z - 1, depth, maxDepth);
     }
 
-    public void succ1(int x, int y, int z) {
+    public void succ1(int x, int y, int z, int depth, int maxDepth) {
+        if (depth >= maxDepth) {
+            return; // 达到递归深度阈值，终止递归
+        }
+    
         BlockPos newPos = new BlockPos(x, y, z);
-        if(world.getBlockState(newPos).getBlock() == ModBlocks.ore_oil_empty && !processed.contains(newPos)) {
+        if (world.getBlockState(newPos).getBlock() == ModBlocks.ore_oil_empty && !processed.contains(newPos)) {
             processed.add(newPos);
-            succInit1(x, y, z);
+            succInit1(x, y, z, depth + 1, maxDepth);
         }
     }
 
-    public void succ2(int x, int y, int z) {
+    public void succ2(int x, int y, int z, int depth, int maxDepth) {
+        if (depth >= maxDepth) {
+            return; // 达到递归深度阈值，终止递归
+        }
+    
         BlockPos newPos = new BlockPos(x, y, z);
-        if(world.getBlockState(newPos).getBlock() == ModBlocks.ore_oil_empty && processed.contains(newPos)) {
-            processed.remove(newPos);
-            succInit2(x, y, z);
-        } else if(world.getBlockState(newPos).getBlock() == ModBlocks.ore_oil || world.getBlockState(newPos).getBlock() == ModBlocks.ore_bedrock_oil) {
-            list.add(new int[] { x, y, z });
+        if (world.getBlockState(newPos).getBlock() == ModBlocks.ore_oil_empty && !processed.contains(newPos)) {
+            processed.add(newPos);
+            succInit2(x, y, z, depth + 1, maxDepth);
+        } else if (world.getBlockState(newPos).getBlock() == ModBlocks.ore_oil || world.getBlockState(newPos).getBlock() == ModBlocks.ore_bedrock_oil) {
+            list.add(new int[]{x, y, z});
         }
     }
-
 
     @Override
     public void setPower(long i) {

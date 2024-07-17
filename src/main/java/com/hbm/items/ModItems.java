@@ -296,6 +296,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.EnumHelper;
@@ -304,7 +305,91 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 public class ModItems {
 	
 	public static final List<Item> ALL_ITEMS = new ArrayList<Item>();
-	
+	/*Extraplanets and GalaxySpace compatibility
+    public static final Item EXTRAPLANETS_TIER1_SPACE_SUIT_HELMET;
+	public static final Item EXTRAPLANETS_TIER1_SPACE_SUIT_CHEST;
+    public static final Item EXTRAPLANETS_TIER1_SPACE_SUIT_JETPACK_CHEST;
+    public static final Item EXTRAPLANETS_TIER1_SPACE_SUIT_LEGGINGS;
+    public static final Item EXTRAPLANETS_TIER1_SPACE_SUIT_BOOTS;
+	public static final Item EXTRAPLANETS_TIER1_SPACE_SUIT_GRAVITY_BOOTS;
+
+    public static final Item EXTRAPLANETS_TIER2_SPACE_SUIT_HELMET;
+    public static final Item EXTRAPLANETS_TIER2_SPACE_SUIT_CHEST;
+	public static final Item EXTRAPLANETS_TIER2_SPACE_SUIT_JETPACK_CHEST;
+    public static final Item EXTRAPLANETS_TIER2_SPACE_SUIT_LEGGINGS;
+    public static final Item EXTRAPLANETS_TIER2_SPACE_SUIT_BOOTS;
+	public static final Item EXTRAPLANETS_TIER2_SPACE_SUIT_GRAVITY_BOOTS;
+
+    public static final Item EXTRAPLANETS_TIER3_SPACE_SUIT_HELMET;
+    public static final Item EXTRAPLANETS_TIER3_SPACE_SUIT_CHEST;
+	public static final Item EXTRAPLANETS_TIER3_SPACE_SUIT_JETPACK_CHEST;
+    public static final Item EXTRAPLANETS_TIER3_SPACE_SUIT_LEGGINGS;
+    public static final Item EXTRAPLANETS_TIER3_SPACE_SUIT_BOOTS;
+	public static final Item EXTRAPLANETS_TIER3_SPACE_SUIT_GRAVITY_BOOTS;
+
+    public static final Item EXTRAPLANETS_TIER4_SPACE_SUIT_HELMET;
+    public static final Item EXTRAPLANETS_TIER4_SPACE_SUIT_CHEST;
+	public static final Item EXTRAPLANETS_TIER4_SPACE_SUIT_JETPACK_CHEST;
+    public static final Item EXTRAPLANETS_TIER4_SPACE_SUIT_LEGGINGS;
+    public static final Item EXTRAPLANETS_TIER4_SPACE_SUIT_BOOTS;
+    public static final Item EXTRAPLANETS_TIER4_SPACE_SUIT_GRAVITY_BOOTS;
+
+	public static final Item GALAXYSPACE_SPACE_SUIT_HEAD;
+	public static final Item GALAXYSPACE_SPACE_SUIT_CHEST;
+	public static final Item GALAXYSPACE_SPACE_SUIT_LEGS;
+	public static final Item GALAXYSPACE_SPACE_SUIT_FEET;
+
+	public static final Item GALAXYSPACE_SPACE_SUIT_LIGHT_HEAD;
+	public static final Item GALAXYSPACE_SPACE_SUIT_LIGHT_CHEST;
+	public static final Item GALAXYSPACE_SPACE_SUIT_LIGHT_LEGS;
+	public static final Item GALAXYSPACE_SPACE_SUIT_LIGHT_FEET;
+    static {
+        // 初始化静态变量
+        EXTRAPLANETS_TIER1_SPACE_SUIT_HELMET = getItem("extraplanets", "tier1_space_suit_helmet");
+        EXTRAPLANETS_TIER1_SPACE_SUIT_CHEST = getItem("extraplanets", "tier1_space_suit_chest");
+		EXTRAPLANETS_TIER1_SPACE_SUIT_JETPACK_CHEST = getItem("extraplanets", "tier1_space_suit_jetpack_chest");
+        EXTRAPLANETS_TIER1_SPACE_SUIT_LEGGINGS = getItem("extraplanets", "tier1_space_suit_leggings");
+        EXTRAPLANETS_TIER1_SPACE_SUIT_BOOTS = getItem("extraplanets", "tier1_space_suit_boots");
+		EXTRAPLANETS_TIER1_SPACE_SUIT_GRAVITY_BOOTS = getItem("extraplanets", "tier1_space_suit_gravity_boots");
+
+        EXTRAPLANETS_TIER2_SPACE_SUIT_HELMET = getItem("extraplanets", "tier2_space_suit_helmet");
+        EXTRAPLANETS_TIER2_SPACE_SUIT_CHEST = getItem("extraplanets", "tier2_space_suit_chest");
+		EXTRAPLANETS_TIER2_SPACE_SUIT_JETPACK_CHEST = getItem("extraplanets", "tier2_space_suit_jetpack_chest");
+        EXTRAPLANETS_TIER2_SPACE_SUIT_LEGGINGS = getItem("extraplanets", "tier2_space_suit_leggings");
+        EXTRAPLANETS_TIER2_SPACE_SUIT_BOOTS = getItem("extraplanets", "tier2_space_suit_boots");
+		EXTRAPLANETS_TIER2_SPACE_SUIT_GRAVITY_BOOTS = getItem("extraplanets", "tier2_space_suit_gravity_boots");
+
+        EXTRAPLANETS_TIER3_SPACE_SUIT_HELMET = getItem("extraplanets", "tier3_space_suit_helmet");
+        EXTRAPLANETS_TIER3_SPACE_SUIT_CHEST = getItem("extraplanets", "tier3_space_suit_chest");
+		EXTRAPLANETS_TIER3_SPACE_SUIT_JETPACK_CHEST = getItem("extraplanets", "tier3_space_suit_jetpack_chest");
+        EXTRAPLANETS_TIER3_SPACE_SUIT_LEGGINGS = getItem("extraplanets", "tier3_space_suit_leggings");
+        EXTRAPLANETS_TIER3_SPACE_SUIT_BOOTS = getItem("extraplanets", "tier3_space_suit_boots");
+		EXTRAPLANETS_TIER3_SPACE_SUIT_GRAVITY_BOOTS = getItem("extraplanets", "tier3_space_suit_gravity_boots");
+
+        EXTRAPLANETS_TIER4_SPACE_SUIT_HELMET = getItem("extraplanets", "tier4_space_suit_helmet");
+        EXTRAPLANETS_TIER4_SPACE_SUIT_CHEST = getItem("extraplanets", "tier4_space_suit_chest");
+		EXTRAPLANETS_TIER4_SPACE_SUIT_JETPACK_CHEST = getItem("extraplanets", "tier4_space_suit_jetpack_chest");
+        EXTRAPLANETS_TIER4_SPACE_SUIT_LEGGINGS = getItem("extraplanets", "tier4_space_suit_leggings");
+        EXTRAPLANETS_TIER4_SPACE_SUIT_BOOTS = getItem("extraplanets", "tier4_space_suit_boots");
+        EXTRAPLANETS_TIER4_SPACE_SUIT_GRAVITY_BOOTS = getItem("extraplanets", "tier4_space_suit_gravity_boots");
+
+		GALAXYSPACE_SPACE_SUIT_HEAD = getItem("galaxyspace","spce_suit_head");
+		GALAXYSPACE_SPACE_SUIT_CHEST = getItem("galaxyspace","spce_suit_chest");
+		GALAXYSPACE_SPACE_SUIT_LEGS = getItem("galaxyspace","spce_suit_legs");
+		GALAXYSPACE_SPACE_SUIT_FEET = getItem("galaxyspace","spce_suit_feet");
+
+		GALAXYSPACE_SPACE_SUIT_LIGHT_HEAD = getItem("galaxyspace","spce_suit_light_head");
+		GALAXYSPACE_SPACE_SUIT_LIGHT_CHEST = getItem("galaxyspace","spce_suit_light_chest");
+		GALAXYSPACE_SPACE_SUIT_LIGHT_LEGS = getItem("galaxyspace","spce_suit_light_legs");
+		GALAXYSPACE_SPACE_SUIT_LIGHT_FEET = getItem("galaxyspace","spce_suit_light_feet");
+    }
+
+    // 获取物品的方法
+    private static Item getItem(String modId, String itemName) {
+        ResourceLocation itemResourceLocation = new ResourceLocation(modId, itemName);
+        return ForgeRegistries.ITEMS.getValue(itemResourceLocation);
+    }
+*/
 	public static final int guiID_item_folder = 1099;
 	public static final int guiID_item_designator = 10100;
 	public static final int guiID_item_sat_interface = 10101;

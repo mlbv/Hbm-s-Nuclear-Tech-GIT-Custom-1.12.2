@@ -26,7 +26,7 @@ public class EngineRecipes {
 		addFuel(ModForgeFluids.heavyoil, FuelGrade.LOW, 25_000);
 		addFuel(ModForgeFluids.heatingoil, FuelGrade.LOW, 100_000);
 		addFuel(ModForgeFluids.reclaimed, FuelGrade.LOW, 200_000);
-		addFuel(ModForgeFluids.petroil, FuelGrade.MEDIUM, 300_000);
+		addFuel(ModForgeFluids.fuel_light, FuelGrade.MEDIUM, 300_000);
 		addFuel(ModForgeFluids.naphtha, FuelGrade.MEDIUM, 200_000);
 		addFuel(ModForgeFluids.diesel, FuelGrade.HIGH, 500_000);
 		addFuel(ModForgeFluids.lightoil, FuelGrade.MEDIUM, 500_000);
@@ -46,7 +46,7 @@ public class EngineRecipes {
 
 		//Compat
 		addFuel("biofuel", FuelGrade.HIGH, 400_000); //galacticraft & industrialforegoing
-		addFuel("petroil", FuelGrade.MEDIUM, 300_000); //galacticraft
+		addFuel("fuel_light", FuelGrade.MEDIUM, 300_000); //galacticraft
 		addFuel("refined_fuel", FuelGrade.HIGH, 1_000_000); //thermalfoundation
 		addFuel("refined_biofuel", FuelGrade.HIGH, 400_000); //thermalfoundation
 	
@@ -54,7 +54,7 @@ public class EngineRecipes {
 
 	public static enum FuelGrade {
 		LOW("trait.fuelgrade.low"),			//heating and industrial oil				< star engine, iGen
-		MEDIUM("trait.fuelgrade.medium"),	//petroil									< diesel generator
+		MEDIUM("trait.fuelgrade.medium"),	//fuel_light									< diesel generator
 		HIGH("trait.fuelgrade.high"),		//diesel, gasoline							< HP engine
 		AERO("trait.fuelgrade.aero"),	//kerosene and other light aviation fuels	< turbofan
 		GAS("trait.fuelgrade.gas");		//fuel gasses like NG, PG and syngas		< gas turbine

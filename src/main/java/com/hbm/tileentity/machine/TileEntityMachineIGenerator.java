@@ -91,7 +91,7 @@ public class TileEntityMachineIGenerator extends TileEntityMachineBase implement
 				}
 				return false;
 			}))
-				FFUtils.fillFromFluidContainer(inventory, tanks[1], 9, 10);
+			FFUtils.fillFromFluidContainer(inventory, tanks[1], 9, 10);
 			FFUtils.fillFromFluidContainer(inventory, tanks[2], 11, 12);
 			
 			loadFuel();
@@ -148,7 +148,34 @@ public class TileEntityMachineIGenerator extends TileEntityMachineBase implement
 			}
 		}
 	}
-	
+	/*
+	private void updateConnections() {
+		int facing = this.getBlockMetadata() - BlockDummyable.offset;
+		
+		switch(facing){
+			case 2://north
+				this.trySubscribe(world, pos.add(0, 0, 2), Library.POS_Z);
+				this.trySubscribe(world, pos.add(1, 0, 2), Library.POS_Z);
+				this.trySubscribe(world, pos.add(0, 0, -3), Library.NEG_Z);
+				this.trySubscribe(world, pos.add(1, 0, -3), Library.NEG_Z);
+			case 3://south
+				this.trySubscribe(world, pos.add(0, 0, -2), Library.NEG_Z);
+				this.trySubscribe(world, pos.add(-1, 0, -2), Library.NEG_Z);
+				this.trySubscribe(world, pos.add(0, 0, 3), Library.POS_Z);
+				this.trySubscribe(world, pos.add(-1, 0, 3), Library.POS_Z);
+			case 4://west
+				this.trySubscribe(world, pos.add(2, 0, 0), Library.POS_X);
+				this.trySubscribe(world, pos.add(2, 0, -1), Library.POS_X);
+				this.trySubscribe(world, pos.add(-3, 0, 0), Library.NEG_X);
+				this.trySubscribe(world, pos.add(-3, 0, -1), Library.NEG_X);		
+			case 5://east
+				this.trySubscribe(world, pos.add(-2, 0, 0), Library.NEG_X);
+				this.trySubscribe(world, pos.add(-2, 0, 1), Library.NEG_X);
+				this.trySubscribe(world, pos.add(3, 0, 0), Library.POS_X);
+				this.trySubscribe(world, pos.add(3, 0, 1), Library.POS_X);
+		}
+	}
+	*/
 	@Override
 	public void networkUnpack(NBTTagCompound nbt) {
 		int[] rtgs = nbt.getIntArray("rtgs");
@@ -247,12 +274,15 @@ public class TileEntityMachineIGenerator extends TileEntityMachineBase implement
 	static {
 		fluidHeat.put(ModForgeFluids.smear, 75);
 		fluidHeat.put(ModForgeFluids.heatingoil, 150);
+		fluidHeat.put(ModForgeFluids.fuel_dense, 150);//bc
 		fluidHeat.put(ModForgeFluids.diesel, 225);
 		fluidHeat.put(ModForgeFluids.kerosene, 300);
 		fluidHeat.put(ModForgeFluids.reclaimed, 100);
-		fluidHeat.put(ModForgeFluids.petroil, 125);
+		fluidHeat.put(ModForgeFluids.fuel_light, 125);//bc
 		fluidHeat.put(ModForgeFluids.biofuel, 200);
 		fluidHeat.put(ModForgeFluids.nitan, 2500);
+		fluidHeat.put(ModForgeFluids.petroleum, 300);
+		fluidHeat.put(ModForgeFluids.fuel_gaseous, 300);//bc
 	}
 	
 	public int getHeatFromFuel(FluidStack fluid) {
@@ -404,7 +434,7 @@ public class TileEntityMachineIGenerator extends TileEntityMachineBase implement
 	
 	public void sendIGenPower() {
 		ForgeDirection dir = ForgeDirection.getOrientation(this.getBlockMetadata() - BlockDummyable.offset);
-		
+		//返回朝向：DOWN, UP, NORTH, SOUTH, WEST, EAST
 		int[] rot = MultiblockHandlerXR.rotate(new int [] {1,0,4,0,8,8}, dir.toEnumFacing());
 		
 		for(int ix = -rot[4]; ix <= rot[5]; ix++) {
