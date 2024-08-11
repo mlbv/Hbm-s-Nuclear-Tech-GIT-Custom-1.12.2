@@ -1,74 +1,100 @@
 package com.hbm.render.tileentity;
 
 import org.lwjgl.opengl.GL11;
-
 import com.hbm.main.ResourceManager;
 import com.hbm.forgefluid.ModForgeFluids;
 import com.hbm.render.RenderHelper;
 import com.hbm.tileentity.machine.TileEntityMachineCrystallizer;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.GlStateManager.DestFactor;
-import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 
 public class RenderCrystallizer extends TileEntitySpecialRenderer<TileEntityMachineCrystallizer> {
 
-	@Override
-	public boolean isGlobalRenderer(TileEntityMachineCrystallizer te) {
-		return true;
-	}
-	
-	@Override
-	public void render(TileEntityMachineCrystallizer crys, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-		GL11.glPushMatrix();
-        GL11.glTranslated(x + 0.5D, y, z + 0.5D);
+	private static final double RENDER_DISTANCE = 8.0;
+
+    @Override
+    public boolean isGlobalRenderer(TileEntityMachineCrystallizer te) {
+        return true;
+    }
+
+    @Override
+    public void render(TileEntityMachineCrystallizer crys, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x + 0.5D, y, z + 0.5D);
         GlStateManager.enableLighting();
         GlStateManager.disableCull();
 
-		switch(crys.getBlockMetadata() - 10) {
-		case 2: GL11.glRotatef(90, 0F, 1F, 0F); break;
-		case 4: GL11.glRotatef(180, 0F, 1F, 0F); break;
-		case 3: GL11.glRotatef(270, 0F, 1F, 0F); break;
-		case 5: GL11.glRotatef(0, 0F, 1F, 0F); break;
-		}
+        // 根据方块的元数据进行旋转
+        switch (crys.getBlockMetadata() - 10) {
+            case 2:
+                GlStateManager.rotate(90, 0F, 1F, 0F);
+                break;
+            case 4:
+                GlStateManager.rotate(180, 0F, 1F, 0F);
+                break;
+            case 3:
+                GlStateManager.rotate(270, 0F, 1F, 0F);
+                break;
+            case 5:
+                GlStateManager.rotate(0, 0F, 1F, 0F);
+                break;
+        }
 
-		GlStateManager.shadeModel(GL11.GL_SMOOTH);
+        GlStateManager.shadeModel(GL11.GL_SMOOTH);
         bindTexture(ResourceManager.crystallizer_tex);
         ResourceManager.crystallizer.renderPart("Body");
 
-        GL11.glPushMatrix();
-        GL11.glRotatef(crys.prevAngle + (crys.angle - crys.prevAngle) * partialTicks, 0, 1, 0);
+        // 渲染额外部分（Spinner 和 Windows）
+		if (shouldRender(crys.getPos())){
+        	renderExtras(crys, partialTicks);
+			renderFill(crys);
+		}
+
+        GlStateManager.shadeModel(GL11.GL_FLAT);
+        GlStateManager.enableCull();
+
+        GlStateManager.popMatrix();
+    }
+	private boolean shouldRender(BlockPos pos) {
+        EntityPlayer player = Minecraft.getMinecraft().player;
+        double distance = player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ());
+        return distance <= RENDER_DISTANCE * RENDER_DISTANCE;
+    }
+    private void renderExtras(TileEntityMachineCrystallizer crys, float partialTicks) {
+        // 渲染旋转部分（Spinner）
+        GlStateManager.pushMatrix();
+        float rotation = crys.prevAngle + (crys.angle - crys.prevAngle) * partialTicks;
+        GlStateManager.rotate(rotation, 0, 1, 0);
         bindTexture(ResourceManager.crystallizer_spinner_tex);
         ResourceManager.crystallizer.renderPart("Spinner");
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 
-        renderFill(crys);
+        // 渲染 Windows 部分
         bindTexture(ResourceManager.crystallizer_window_tex);
         ResourceManager.crystallizer.renderPart("Windows");
-        
-		GlStateManager.shadeModel(GL11.GL_FLAT);
-		GlStateManager.enableCull();
+    }
 
-        GL11.glPopMatrix();
-	}
+    public void renderFill(TileEntityMachineCrystallizer crys) {
+        if (crys.tank.getFluid() == null) return;
 
-	public void renderFill(TileEntityMachineCrystallizer crys){
-		if(crys.tank.getFluid() == null) return;
-		GL11.glPushMatrix();
-		GlStateManager.enableCull();
-		GlStateManager.disableTexture2D();
-       	GlStateManager.enableBlend();
-		GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE);
-		
-		RenderHelper.setColor(ModForgeFluids.getFluidColor(crys.tank.getFluid().getFluid()));
-		ResourceManager.crystallizer.renderPart("Windows");
+        GlStateManager.pushMatrix();
+        GlStateManager.enableCull();
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
 
-		
-		GL11.glColor4f(1F, 1F, 1F, 1F);
-		GlStateManager.disableBlend();
-		GlStateManager.enableTexture2D();
-		GlStateManager.disableCull();
-		GL11.glPopMatrix();
-	}
+        // 设置流体颜色
+        RenderHelper.setColor(ModForgeFluids.getFluidColor(crys.tank.getFluid().getFluid()));
+        ResourceManager.crystallizer.renderPart("Windows");
+
+        GlStateManager.color(1F, 1F, 1F, 1F);  // 重置颜色
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableCull();
+        GlStateManager.popMatrix();
+    }
 }
