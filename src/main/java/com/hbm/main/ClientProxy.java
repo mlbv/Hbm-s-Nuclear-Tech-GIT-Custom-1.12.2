@@ -473,89 +473,7 @@ import com.hbm.tileentity.deco.TileEntityDecoPoleTop;
 import com.hbm.tileentity.deco.TileEntityObjTester;
 import com.hbm.tileentity.deco.TileEntitySpinnyLight;
 import com.hbm.tileentity.deco.TileEntityTestRender;
-import com.hbm.tileentity.machine.TileEntityAMSBase;
-import com.hbm.tileentity.machine.TileEntityAMSEmitter;
-import com.hbm.tileentity.machine.TileEntityAMSLimiter;
-import com.hbm.tileentity.machine.TileEntityBMPowerBox;
-import com.hbm.tileentity.machine.TileEntityBarrel;
-import com.hbm.tileentity.machine.TileEntityBlackBook;
-import com.hbm.tileentity.machine.TileEntityBlastDoor;
-import com.hbm.tileentity.machine.TileEntityBroadcaster;
-import com.hbm.tileentity.machine.TileEntityChungus;
-import com.hbm.tileentity.machine.TileEntityControlPanel;
-import com.hbm.tileentity.machine.TileEntityCore;
-import com.hbm.tileentity.machine.TileEntityCoreEmitter;
-import com.hbm.tileentity.machine.TileEntityCoreInjector;
-import com.hbm.tileentity.machine.TileEntityCoreReceiver;
-import com.hbm.tileentity.machine.TileEntityCoreStabilizer;
-import com.hbm.tileentity.machine.TileEntityDemonLamp;
-import com.hbm.tileentity.machine.TileEntityForceField;
-import com.hbm.tileentity.machine.TileEntityFurnaceIron;
-import com.hbm.tileentity.machine.TileEntityFurnaceSteel;
 import com.hbm.tileentity.machine.TileEntityFurnaceCombination;
-import com.hbm.tileentity.machine.TileEntityHeaterOven;
-import com.hbm.tileentity.machine.TileEntityHeaterElectric;
-import com.hbm.tileentity.machine.TileEntityHeaterHeatex;
-import com.hbm.tileentity.machine.TileEntityHeaterOilburner;
-import com.hbm.tileentity.machine.TileEntityHeaterRadioThermal;
-import com.hbm.tileentity.machine.TileEntityGeiger;
-import com.hbm.tileentity.machine.TileEntityHeaterFirebox;
-import com.hbm.tileentity.machine.TileEntityITER;
-import com.hbm.tileentity.machine.TileEntityITERStruct;
-import com.hbm.tileentity.machine.TileEntityMachineAssembler;
-import com.hbm.tileentity.machine.TileEntityMachineBAT9000;
-import com.hbm.tileentity.machine.TileEntityMachineCentrifuge;
-import com.hbm.tileentity.machine.TileEntityMachineChemplant;
-import com.hbm.tileentity.machine.TileEntityMachineCrystallizer;
-import com.hbm.tileentity.machine.TileEntityMachineCyclotron;
-import com.hbm.tileentity.machine.TileEntityDeuteriumTower;
-import com.hbm.tileentity.machine.TileEntityMachineEPress;
-import com.hbm.tileentity.machine.TileEntityMachineFENSU;
-import com.hbm.tileentity.machine.TileEntityMachineFluidTank;
-import com.hbm.tileentity.machine.TileEntityMachineGasCent;
-import com.hbm.tileentity.machine.TileEntityMachineIGenerator;
-import com.hbm.tileentity.machine.TileEntityMachineLargeTurbine;
-import com.hbm.tileentity.machine.TileEntityMachineMiniRTG;
-import com.hbm.tileentity.machine.TileEntityMachineMiningLaser;
-import com.hbm.tileentity.machine.TileEntityMachineMixer;
-import com.hbm.tileentity.machine.TileEntityMachineExcavator;
-import com.hbm.tileentity.machine.TileEntityMachineMissileAssembly;
-import com.hbm.tileentity.machine.TileEntityMachineOrbus;
-import com.hbm.tileentity.machine.TileEntityMachinePlasmaHeater;
-import com.hbm.tileentity.machine.TileEntityMachinePress;
-import com.hbm.tileentity.machine.TileEntityMachinePuF6Tank;
-import com.hbm.tileentity.machine.TileEntityMachineRTG;
-import com.hbm.tileentity.machine.TileEntityMachineRadGen;
-import com.hbm.tileentity.machine.TileEntityMachineRadar;
-import com.hbm.tileentity.machine.TileEntityMachineReactor;
-import com.hbm.tileentity.machine.TileEntityMachineReactorSmall;
-import com.hbm.tileentity.machine.TileEntityMachineSatDock;
-import com.hbm.tileentity.machine.TileEntityMachineSeleniumEngine;
-import com.hbm.tileentity.machine.TileEntityMachineTurbofan;
-import com.hbm.tileentity.machine.TileEntityMachineUF6Tank;
-import com.hbm.tileentity.machine.TileEntityMachineUUCreator;
-import com.hbm.tileentity.machine.TileEntityMicrowave;
-import com.hbm.tileentity.machine.TileEntityMultiblock;
-import com.hbm.tileentity.machine.TileEntityPlasmaStruct;
-import com.hbm.tileentity.machine.TileEntityRadioRec;
-import com.hbm.tileentity.machine.TileEntityRadiobox;
-import com.hbm.tileentity.machine.TileEntitySILEX;
-import com.hbm.tileentity.machine.TileEntityFEL;
-import com.hbm.tileentity.machine.TileEntitySiloHatch;
-import com.hbm.tileentity.machine.TileEntitySlidingBlastDoor;
-import com.hbm.tileentity.machine.TileEntityHeatBoiler;
-import com.hbm.tileentity.machine.TileEntitySolarBoiler;
-import com.hbm.tileentity.machine.TileEntitySolarMirror;
-import com.hbm.tileentity.machine.TileEntitySoyuzCapsule;
-import com.hbm.tileentity.machine.TileEntitySoyuzLauncher;
-import com.hbm.tileentity.machine.TileEntitySoyuzStruct;
-import com.hbm.tileentity.machine.TileEntitySpacer;
-import com.hbm.tileentity.machine.TileEntityStorageDrum;
-import com.hbm.tileentity.machine.TileEntityStructureMarker;
-import com.hbm.tileentity.machine.TileEntityTesla;
-import com.hbm.tileentity.machine.TileEntityTowerLarge;
-import com.hbm.tileentity.machine.TileEntityTowerSmall;
-import com.hbm.tileentity.machine.TileEntityVaultDoor;
 import com.hbm.tileentity.machine.oil.TileEntityMachinePumpjack;
 import com.hbm.tileentity.machine.oil.TileEntityMachineFrackingTower;
 import com.hbm.tileentity.machine.oil.TileEntityMachineFractionTower;
@@ -1178,7 +1096,7 @@ public class ClientProxy extends ServerProxy {
 	}
 	//version 2, now with strings!
 	@Override
-	public void spawnParticle(double x, double y, double z, String type, float args[]) {
+	public void spawnParticle(double x, double y, double z, String type, float[] args) {
 		World world = Minecraft.getMinecraft().world;
 		TextureManager man = Minecraft.getMinecraft().renderEngine;
 		
@@ -1697,7 +1615,7 @@ public class ClientProxy extends ServerProxy {
 				
 				fx = new ParticleExplosionLarge.Factory().createParticle(-1, world, x, y, z, data.getFloat("size"), 0.0F, 0.0F);
 				float r = 1.0F - rand.nextFloat() * 0.2F;
-				fx.setRBGColorF(1F * r, 0.9F * r, 0.5F * r);
+				fx.setRBGColorF(r, 0.9F * r, 0.5F * r);
 				
 				for(int i = 0; i < data.getByte("count"); i++) {
 					ParticleExplosion sec = (ParticleExplosion)new ParticleExplosion.Factory().createParticle(-1, world, x, y, z, 0.0F, 0.0F, 0.0F);
@@ -1711,7 +1629,7 @@ public class ClientProxy extends ServerProxy {
 			if("townaura".equals(data.getString("mode"))) {
 				fx = new ParticleSuspendedTown.Factory().createParticle(-1, world, x, y, z, 0, 0, 0);
 				float color = 0.5F + rand.nextFloat() * 0.5F;
-				fx.setRBGColorF(0.8F * color, 0.9F * color, 1.0F * color);
+				fx.setRBGColorF(0.8F * color, 0.9F * color, color);
 				HbmParticleUtility.setMotion(fx, mX, mY, mZ);
 			}
 
@@ -2155,12 +2073,11 @@ public class ClientProxy extends ServerProxy {
 					Minecraft.getMinecraft().getSoundHandler().playSound(new SoundLoopCrucible((EntityPlayer) e));
 				}
 			}
-			return;
-		}
+        }
 		
 	}
 	
-	private HashMap<Integer, Long> vanished = new HashMap<>();
+	private final HashMap<Integer, Long> vanished = new HashMap<>();
 	
 	public void vanish(int ent) {
 		vanished.put(ent, System.currentTimeMillis() + 2000);
@@ -2215,7 +2132,7 @@ public class ClientProxy extends ServerProxy {
 
 			float momentum = base * world.rand.nextFloat();
 			float sway = (pow - i) / (float)pow;
-			Vec3 vec = Vec3.createVectorHelper(((Vec3)payload).xCoord, ((Vec3)payload).yCoord, ((Vec3)payload).zCoord);
+			Vec3 vec = Vec3.createVectorHelper(payload.xCoord, payload.yCoord, payload.zCoord);
 			vec.rotateAroundZ((float) (angle * world.rand.nextGaussian() * sway * Math.PI / 180D));
 			vec.rotateAroundY((float) (angle * world.rand.nextGaussian() * sway * Math.PI / 180D));
 			

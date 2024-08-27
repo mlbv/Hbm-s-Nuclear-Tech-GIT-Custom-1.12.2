@@ -32,6 +32,7 @@ public class MachineIGenerator extends BlockDummyable {
 		
 		if(meta >= extra)
 			return new TileEntityProxyCombo(false, true, true);
+		
 		return null;
 	}
 
