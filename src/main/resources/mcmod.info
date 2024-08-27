@@ -16,8 +16,18 @@
     ],
     "parent": "",
     "screenshots": [],
+    "useDependencyInformation": true,
+    "requiredMods": [
+      "immersiveengineering",
+      "buildcraftcore"
+    ],
     "dependencies": [
-      "mod_MinecraftForge"
+      "mod_MinecraftForge",
+      "immersiveengineering",
+      "buildcraftcore",
+      "galacticraftcore",
+      "galaxyspace",
+      "extraplanets"
     ]
   }
 ]

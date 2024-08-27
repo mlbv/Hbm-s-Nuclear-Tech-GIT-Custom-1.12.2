@@ -28,6 +28,10 @@ public class Tuple {
 			return this.value;
 		}
 		
+		public static <X, Y> Pair<X, Y> of(X x, Y y) {
+			return new Pair<>(x, y);
+		}
+		
 		@Override
 		public int hashCode() {
 			final int prime = 31;

@@ -1,9 +1,5 @@
 package com.hbm.inventory;
 
-import static com.hbm.inventory.OreDictManager.CU;
-import static com.hbm.inventory.OreDictManager.IRON;
-import static com.hbm.inventory.OreDictManager.STEEL;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -350,7 +346,14 @@ public class AnvilRecipes {
 		constructionRecipes.add(new AnvilConstructionRecipe(
 				new AStack[] {new ComparableStack(ModItems.plate_dineutronium, 4), new ComparableStack(ModItems.particle_sparkticle, 1), new ComparableStack(ModItems.plate_armor_fau, 6)},
 				new AnvilOutput(new ItemStack(ModItems.plate_armor_dnt))).setTier(7));
-		
+		constructionRecipes.add(new AnvilConstructionRecipe(
+				new AStack[] {
+						new ComparableStack(Blocks.STONEBRICK, 16),
+						new OreDictStack(KEY_LOG, 16),
+						new OreDictStack(CU.ingot(), 8),
+						new OreDictStack(KEY_BRICK, 16),
+						new OreDictStack("dustBlaze", 4)
+				}, new AnvilOutput(new ItemStack(ModBlocks.furnace_combination))).setTier(2));
 		pullFromAssembler(new ComparableStack(ModItems.plate_mixed, 4), 3);
 		
 	}

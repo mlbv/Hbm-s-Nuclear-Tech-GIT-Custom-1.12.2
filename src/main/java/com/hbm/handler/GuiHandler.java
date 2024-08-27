@@ -45,6 +45,7 @@ import com.hbm.tileentity.machine.TileEntityDiFurnace;
 import com.hbm.tileentity.machine.TileEntityDiFurnaceRTG;
 import com.hbm.tileentity.machine.TileEntityFWatzCore;
 import com.hbm.tileentity.machine.TileEntityForceField;
+import com.hbm.tileentity.machine.TileEntityFurnaceCombination;
 import com.hbm.tileentity.machine.TileEntityHadron;
 import com.hbm.tileentity.machine.TileEntityHeaterFirebox;
 import com.hbm.tileentity.machine.TileEntityITER;
@@ -739,6 +740,9 @@ public class GuiHandler implements IGuiHandler {
 			return null;
 		case ModItems.guiID_item_book:
 			return new ContainerBook(player.inventory);
+		// case ModBlocks.guiID_furnacecombo:
+		// 	if(entity instanceof TileEntityFurnaceCombination)
+		// 		return new ContainerFurnaceCombo(player.inventory,(TileEntityFurnaceCombination) entity);
 		}
 		
 		return null;

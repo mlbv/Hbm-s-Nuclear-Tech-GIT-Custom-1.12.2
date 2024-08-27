@@ -135,7 +135,10 @@ public class ModForgeFluids {
 	public static Fluid fuel_dense = FluidRegistry.getFluid("fuel_dense");
 	public static Fluid fuel_gaseous = FluidRegistry.getFluid("fuel_gaseous");
 	public static Fluid fuel_light = FluidRegistry.getFluid("fuel_light");
-
+	
+	//Immersive Engineering compatibility
+	public static Fluid COALCREOSOTE = FluidRegistry.getFluid("creosote");
+	
 	public static void init() {
 		if(!FluidRegistry.registerFluid(spentsteam))
 			spentsteam = FluidRegistry.getFluid("spentsteam");
