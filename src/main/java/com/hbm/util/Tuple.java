@@ -28,10 +28,6 @@ public class Tuple {
 			return this.value;
 		}
 		
-		public static <X, Y> Pair<X, Y> of(X x, Y y) {
-			return new Pair<>(x, y);
-		}
-		
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -56,12 +52,9 @@ public class Tuple {
 			} else if(!key.equals(other.key))
 				return false;
 			if(value == null) {
-				if(other.value != null)
-					return false;
-			} else if(!value.equals(other.value))
-				return false;
-			return true;
-		}
+                return other.value == null;
+			} else return value.equals(other.value);
+        }
 	}
 
 	public static class Triplet<X,Y,Z> {
@@ -118,12 +111,9 @@ public class Tuple {
 			} else if(!y.equals(other.y))
 				return false;
 			if(z == null) {
-				if(other.z != null)
-					return false;
-			} else if(!z.equals(other.z))
-				return false;
-			return true;
-		}
+                return other.z == null;
+			} else return z.equals(other.z);
+        }
 	}
 
 	public static class Quartet<W,X,Y,Z> {
@@ -164,12 +154,9 @@ public class Tuple {
 			} else if(!y.equals(other.y))
 				return false;
 			if(z == null) {
-				if(other.z != null)
-					return false;
-			} else if(!z.equals(other.z))
-				return false;
-			return true;
-		}
+                return other.z == null;
+			} else return z.equals(other.z);
+        }
 
 		W w;
 		X x;

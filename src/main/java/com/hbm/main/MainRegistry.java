@@ -7,8 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import api.hbm.energy.IBatteryItem;
+import api.hbm.energy.IEnergyConnector;
 import com.hbm.entity.item.EntityMovingPackage;
+import com.hbm.handler.rf.ItemCapabilityProvider;
+import com.hbm.handler.rf.TEHeRfCompatLayer;
 import com.hbm.tileentity.network.*;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.Logger;
 
 import com.hbm.blocks.ModBlocks;
@@ -290,9 +297,6 @@ import com.hbm.tileentity.bomb.TileEntityNukePrototype;
 import com.hbm.tileentity.bomb.TileEntityNukeSolinium;
 import com.hbm.tileentity.bomb.TileEntityNukeTsar;
 import com.hbm.tileentity.bomb.TileEntityRailgun;
-import com.hbm.tileentity.network.energy.TileEntityCableBaseNT;
-import com.hbm.tileentity.network.energy.TileEntityCableSwitch;
-import com.hbm.tileentity.network.energy.TileEntityMachineDetector;
 import com.hbm.tileentity.conductor.TileEntityFFFluidDuctMk2;
 import com.hbm.tileentity.conductor.TileEntityFFFluidSuccMk2;
 import com.hbm.tileentity.conductor.TileEntityFFFluidDuctMk2Solid;
