@@ -9,6 +9,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
+@invtweaks.api.container.ChestContainer(rowSize = 13, isLargeChest = false)
 public class ContainerCrateDesh extends Container {
 
 	private TileEntityCrateDesh crate;

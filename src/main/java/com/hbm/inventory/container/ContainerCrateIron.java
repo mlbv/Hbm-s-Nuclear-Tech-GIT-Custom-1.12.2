@@ -9,6 +9,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
+@invtweaks.api.container.ChestContainer(rowSize = 9, isLargeChest = false)
 public class ContainerCrateIron extends Container {
 
 private TileEntityCrateIron diFurnace;
