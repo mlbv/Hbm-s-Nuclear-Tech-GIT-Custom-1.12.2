@@ -7,8 +7,10 @@ import java.util.List;
 import com.hbm.forgefluid.FFUtils;
 import com.hbm.forgefluid.ModForgeFluids;
 import com.hbm.interfaces.ITankPacketAcceptor;
+import com.hbm.inventory.CentrifugeRecipes;
 import com.hbm.inventory.MachineRecipes;
 import com.hbm.inventory.MachineRecipes.GasCentOutput;
+import com.hbm.items.machine.ItemMachineUpgrade;
 import com.hbm.lib.Library;
 import com.hbm.packet.AuxElectricityPacket;
 import com.hbm.packet.AuxGaugePacket;
@@ -17,6 +19,7 @@ import com.hbm.packet.LoopedSoundPacket;
 import com.hbm.packet.PacketDispatcher;
 import com.hbm.tileentity.TileEntityMachineBase;
 
+import api.hbm.energy.IBatteryItem;
 import api.hbm.energy.IEnergyUser;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -241,6 +244,23 @@ public class TileEntityMachineGasCent extends TileEntityMachineBase implements I
 		if(stack == null)
 			return false;
 		return MachineRecipes.getFluidConsumedGasCent(stack.getFluid()) != 0;
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int i, ItemStack stack) {
+		if(i == 0) {
+			return stack.getItem() instanceof IBatteryItem;
+		}
+		if(i == 3){
+			return isValidFluid(FluidUtil.getFluidContained(stack));
+		}
+		return false;
+	}
+
+
+	@Override
+	public boolean canInsertItem(int slot, ItemStack itemStack, int amount) {
+		return this.isItemValidForSlot(slot, itemStack);
 	}
 
 	@Override

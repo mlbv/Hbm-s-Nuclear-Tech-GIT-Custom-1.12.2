@@ -45,6 +45,7 @@ import com.hbm.tileentity.machine.TileEntityDiFurnace;
 import com.hbm.tileentity.machine.TileEntityDiFurnaceRTG;
 import com.hbm.tileentity.machine.TileEntityFWatzCore;
 import com.hbm.tileentity.machine.TileEntityForceField;
+//import com.hbm.tileentity.machine.TileEntityFurnaceCombination;
 import com.hbm.tileentity.machine.TileEntityHadron;
 import com.hbm.tileentity.machine.TileEntityHeaterFirebox;
 import com.hbm.tileentity.machine.TileEntityITER;
@@ -739,6 +740,11 @@ public class GuiHandler implements IGuiHandler {
 			return null;
 		case ModItems.guiID_item_book:
 			return new ContainerBook(player.inventory);
+		// case ModBlocks.guiID_furnace_combination:
+		// 	if(entity instanceof TileEntityFurnaceCombination) {
+		// 		return new ContainerFurnaceCombo(player.inventory, (TileEntityFurnaceCombination) entity);
+		// 	}
+		// 	return null;
 		}
 		
 		return null;
@@ -1351,6 +1357,11 @@ public class GuiHandler implements IGuiHandler {
 				return new GUIAnvil(player, ((NTMAnvil)world.getBlockState(new BlockPos(x, y, z)).getBlock()).tier);
 			}
 			return null;
+		// case ModBlocks.guiID_furnace_combination:
+		// 	if(entity instanceof TileEntityFurnaceCombination) {
+		// 		return new GUIFurnaceCombo(player.inventory, (TileEntityFurnaceCombination) entity);
+		// 	}
+		// return null;
 		// ITEM GUIS
 		case ModItems.guiID_item_folder:
 			return new GUIScreenTemplateFolder(player);

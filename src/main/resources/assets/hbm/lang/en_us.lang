@@ -4416,6 +4416,7 @@ tile.machine_difurnace_on.name=Blast Furnace
 tile.machine_difurnace_rtg_off.name=Nuclear Blast Furnace
 tile.machine_difurnace_rtg_on.name=Nuclear Blast Furnace
 tile.furnace_combination.name=Combination Oven (WIP)
+tile.furnace_combination.desc=A large furnace that can produce charcoal and coal coke.$Produces fluid byproducts.$Heat transfer rate: ΔT*0.25 TU/t
 tile.machine_dineutronium_battery.name=Spark Energy Storage Block
 tile.machine_drill.name=Automatic Mining Drill
 tile.machine_electric_furnace_off.name=Electric Furnace

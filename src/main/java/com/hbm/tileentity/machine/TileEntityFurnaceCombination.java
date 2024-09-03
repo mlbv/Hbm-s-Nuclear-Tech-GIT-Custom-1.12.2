@@ -205,10 +205,6 @@ public class TileEntityFurnaceCombination extends TileEntityMachineBase implemen
                     if (tank.getFluidAmount() > 0) {
                         FFUtils.fillFluid(this, tank, world, targetPos, tank.getFluidAmount());
                     }
-
-                    // 生成烟雾粒子效果
-                    if(this.wasOn && world.rand.nextInt(15) == 0)
-                        spawnSmokeParticles(targetPos, dir);
                 }
             }
 
@@ -305,18 +301,18 @@ public class TileEntityFurnaceCombination extends TileEntityMachineBase implemen
     }
 
     @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return index == 0 && CombinationRecipes.getOutput(stack) != null;
+	public boolean isItemValidForSlot(int i, ItemStack stack) {
+        return i == 0 && CombinationRecipes.getOutput(stack) != null;
     }
 
-    //@Override
-    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
-        return isItemValidForSlot(index, itemStackIn);
+    @Override
+    public boolean canInsertItem(int slot, ItemStack itemStack, int amount) {
+        return isItemValidForSlot(slot, itemStack);
     }
 
-    //@Override
-    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
-        return index == 1;
+    @Override
+	public boolean canExtractItem(int slot, ItemStack itemStack, int amount) {
+        return slot == 1;
     }
 
     @Override
@@ -357,8 +353,8 @@ public class TileEntityFurnaceCombination extends TileEntityMachineBase implemen
         return "container.furnaceCombination";
     }
 
-    //@Override
-    public boolean hasCustomName() {
+    @Override
+	public boolean hasCustomInventoryName() {
         return false;
     }
 }

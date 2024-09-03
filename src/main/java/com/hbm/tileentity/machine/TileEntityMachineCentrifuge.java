@@ -1,6 +1,7 @@
 package com.hbm.tileentity.machine;
 
 import com.hbm.items.ModItems;
+import com.hbm.items.machine.ItemMachineUpgrade;
 import com.hbm.inventory.CentrifugeRecipes;
 import com.hbm.lib.Library;
 import com.hbm.packet.AuxElectricityPacket;
@@ -58,16 +59,18 @@ public class TileEntityMachineCentrifuge extends TileEntityMachineBase implement
 	
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack stack) {
-		if(i == 2 || i == 3 || i == 4 || i == 5)
-		{
-			return false;
+		if(i >= 6){
+			return stack.getItem() instanceof ItemMachineUpgrade;
 		}
-		
 		if(i == 1) {
 			return stack.getItem() instanceof IBatteryItem;
 		}
-		
-		return !(stack.getItem() instanceof IBatteryItem);
+		if(i == 0){
+			ItemStack[] itemStack = CentrifugeRecipes.getOutput(stack);
+			return itemStack == null ? false : true;
+			//return !(stack.getItem() instanceof IBatteryItem);
+		}
+		return false;
 	}
 	
 	@Override
