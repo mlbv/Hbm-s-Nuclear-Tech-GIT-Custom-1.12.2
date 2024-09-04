@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "package": "com.hbm.mixin",
+  "minVersion": "0.8",
+  "setSourceFile": true,
+  "refmap": "mixins.hbm.refmap.json",
+  "plugin": "com.hbm.mixin.MixinConfigPlugin",
+  "mixins": [
+    "MixinTileEntityFluidTank"
+  ],
+  "client": [],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

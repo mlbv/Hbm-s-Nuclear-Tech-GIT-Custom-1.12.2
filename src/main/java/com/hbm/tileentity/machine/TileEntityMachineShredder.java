@@ -1,6 +1,7 @@
 package com.hbm.tileentity.machine;
 
 import com.hbm.interfaces.Untested;
+import com.hbm.inventory.RecipesCommon.ComparableStack;
 import com.hbm.inventory.ShredderRecipes;
 import com.hbm.items.machine.ItemBlades;
 import com.hbm.lib.Library;
@@ -17,10 +18,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
-import net.minecraftforge.common.capabilities.Capability;
+//import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+//import net.minecraftforge.items.CapabilityItemHandler;
+//import net.minecraftforge.items.ItemStackHandler;
 
 public class TileEntityMachineShredder extends TileEntityMachineBase implements ITickable, IEnergyUser {
 
@@ -57,7 +58,7 @@ public class TileEntityMachineShredder extends TileEntityMachineBase implements 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack stack){
 		if (i < 9) {
-			return true;
+			return ShredderRecipes.shredderRecipes.get(new ComparableStack(stack).makeSingular()) == null ? false : true;
 		} else if (i == 29 && stack.getItem() instanceof IBatteryItem) {
 			return true;
 		} else {
@@ -168,50 +169,127 @@ public class TileEntityMachineShredder extends TileEntityMachineBase implements 
 		}
 	}
 	
+	// public void processItem() {
+	// 	for(int inpSlot = 0; inpSlot < 9; inpSlot++)
+	// 	{
+	// 		if(!inventory.getStackInSlot(inpSlot).isEmpty() && hasSpace(inventory.getStackInSlot(inpSlot)))
+	// 		{
+	// 			ItemStack inp = inventory.getStackInSlot(inpSlot);
+	// 			ItemStack outp = ShredderRecipes.getShredderResult(inp);
+	// 			boolean flag = false;
+				
+	// 			for (int outSlot = 9; outSlot < 27; outSlot++)
+	// 			{
+	// 				if (inventory.getStackInSlot(outSlot).getItem() == outp.getItem() && 
+	// 						inventory.getStackInSlot(outSlot).getItemDamage() == outp.getItemDamage() &&
+	// 								inventory.getStackInSlot(outSlot).getCount() + outp.getCount() <= outp.getMaxStackSize()) {
+
+	// 					inventory.getStackInSlot(outSlot).grow(outp.getCount());
+	// 					inventory.getStackInSlot(inpSlot).shrink(1);
+	// 					flag = true;
+	// 					break;
+	// 				}
+	// 			}
+				
+	// 			if(!flag)
+	// 				for (int outSlot = 9; outSlot < 27; outSlot++)
+	// 				{
+	// 					if (inventory.getStackInSlot(outSlot).isEmpty()) {
+	// 						inventory.setStackInSlot(outSlot, outp.copy());
+	// 						inventory.getStackInSlot(inpSlot).shrink(1);
+	// 						break;
+	// 					}
+	// 				}
+				
+	// 			if(inventory.getStackInSlot(inpSlot).isEmpty())
+	// 				inventory.setStackInSlot(inpSlot, ItemStack.EMPTY);
+	// 		}
+	// 	}
+	// }
+	
 	public void processItem() {
-		for(int inpSlot = 0; inpSlot < 9; inpSlot++)
-		{
-			if(!inventory.getStackInSlot(inpSlot).isEmpty() && hasSpace(inventory.getStackInSlot(inpSlot)))
-			{
+		int totalItems = 0; // 记录总的物品数量
+		int[][] itemSlots = new int[9][2]; // 用于存储每个输入槽位和对应物品数量的数组
+		
+		// 第一步：遍历所有输入槽位，记录物品数量，并停止在总数量达到9时
+		for (int inpSlot = 0; inpSlot < 9; inpSlot++) {
+			ItemStack inp = inventory.getStackInSlot(inpSlot);
+			if (!inp.isEmpty()) {
+				int itemCount = inp.getCount();
+				if (totalItems + itemCount > 9) {
+					itemCount = 9 - totalItems; // 只需要取足够的物品数量以达到9
+				}
+				itemSlots[inpSlot][0] = inpSlot; // 记录槽位
+				itemSlots[inpSlot][1] = itemCount; // 记录物品数量
+				totalItems += itemCount;
+				if (totalItems >= 9) break; // 已经达到9个物品，停止记录
+			}
+		}
+	
+		if (totalItems == 0) return; // 如果没有找到可以处理的物品，直接返回
+	
+		// 第二步：将物品放入输出槽
+		for (int[] itemSlot : itemSlots) {
+			int inpSlot = itemSlot[0];
+			int itemCount = itemSlot[1];
+	
+			if (itemCount > 0) {
 				ItemStack inp = inventory.getStackInSlot(inpSlot);
 				ItemStack outp = ShredderRecipes.getShredderResult(inp);
-				boolean flag = false;
 				
-				for (int outSlot = 9; outSlot < 27; outSlot++)
-				{
-					if (inventory.getStackInSlot(outSlot).getItem() == outp.getItem() && 
-							inventory.getStackInSlot(outSlot).getItemDamage() == outp.getItemDamage() &&
-									inventory.getStackInSlot(outSlot).getCount() + outp.getCount() <= outp.getMaxStackSize()) {
-
-						inventory.getStackInSlot(outSlot).grow(outp.getCount());
-						inventory.getStackInSlot(inpSlot).shrink(1);
-						flag = true;
-						break;
-					}
-				}
-				
-				if(!flag)
-					for (int outSlot = 9; outSlot < 27; outSlot++)
-					{
-						if (inventory.getStackInSlot(outSlot).isEmpty()) {
-							inventory.setStackInSlot(outSlot, outp.copy());
-							inventory.getStackInSlot(inpSlot).shrink(1);
-							break;
+				if (outp != null) {
+					int totalOutputCount = outp.getCount() * itemCount; // 计算总的输出物品数量
+					int remainingOutputCount = totalOutputCount;
+					
+					// 尝试堆叠到已有的相同物品槽中
+					for (int outSlot = 9; outSlot < 27 && remainingOutputCount > 0; outSlot++) {
+						ItemStack outputSlotStack = inventory.getStackInSlot(outSlot);
+						if (!outputSlotStack.isEmpty() &&
+							outputSlotStack.getItem() == outp.getItem() &&
+							outputSlotStack.getItemDamage() == outp.getItemDamage()) {
+	
+							int spaceAvailable = outp.getMaxStackSize() - outputSlotStack.getCount();
+							if (spaceAvailable > 0) {
+								int toAdd = Math.min(spaceAvailable, remainingOutputCount);
+								outputSlotStack.grow(toAdd);
+								remainingOutputCount -= toAdd;
+							}
 						}
 					}
-				
-				if(inventory.getStackInSlot(inpSlot).isEmpty())
-					inventory.setStackInSlot(inpSlot, ItemStack.EMPTY);
+	
+					// 如果还有剩余的物品未放入，放入空槽中
+					if (remainingOutputCount > 0) {
+						for (int outSlot = 9; outSlot < 27 && remainingOutputCount > 0; outSlot++) {
+							if (inventory.getStackInSlot(outSlot).isEmpty()) {
+								ItemStack newStack = outp.copy();
+								newStack.setCount(Math.min(remainingOutputCount, outp.getMaxStackSize()));
+								inventory.setStackInSlot(outSlot, newStack);
+								remainingOutputCount -= newStack.getCount();
+							}
+						}
+					}
+	
+					// 减少输入槽的物品数量
+					inp.shrink(itemCount);
+					if (inp.isEmpty()) {
+						inventory.setStackInSlot(inpSlot, ItemStack.EMPTY);
+					}
+				}
 			}
 		}
 	}
 	
+	
+	
+	
+
 	@Untested
 	public boolean canProcess() {
 		if(this.getGearLeft() > 0 && this.getGearLeft() < 3 && 
 				this.getGearRight() > 0 && this.getGearRight() < 3)
 		for(int i = 0; i < 9; i++)
 		{
+			//If the output is not defined, return `ModItems.scrap`, so there is no need to call `getShredderResult` to verify whether it can be processed.
 			if(!inventory.getStackInSlot(i).isEmpty() && inventory.getStackInSlot(i).getCount() > 0 && hasSpace(inventory.getStackInSlot(i)))
 			{
 				return true;

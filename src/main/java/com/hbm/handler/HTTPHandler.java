@@ -24,9 +24,9 @@ public class HTTPHandler {
 	public static void loadStats() {
 
 		try {
-			loadVersion();
+			//loadVersion();
 			loadOF();
-			loadSoyuz();
+			//loadSoyuz();
 
 		} catch (IOException e) {
 			MainRegistry.logger.warn("Version checker failed!");
@@ -34,7 +34,7 @@ public class HTTPHandler {
 	}
 	
 	@Untested
-	private static void loadOF(){
+	private static void loadOF() throws IOException {
 		//Drillgon200: Yeah this is retarded but apparently optifine isn't added to the list of forge mods
 		File mods = new File(MainRegistry.proxy.getDataDir().getPath() + "/mods/");
 		DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>() {

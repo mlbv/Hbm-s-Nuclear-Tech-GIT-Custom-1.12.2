@@ -100,6 +100,9 @@ repositories {
         name = "CoFH Maven"
         url = "http://maven.covers1624.net"
     }
+    maven {
+        url = "https://maven.cleanroommc.com"
+    }
 }
 
 dependencies {
@@ -107,7 +110,15 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
-
+    annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
+    annotationProcessor 'com.google.guava:guava:32.1.2-jre'
+    annotationProcessor 'com.google.code.gson:gson:2.8.9'
+    implementation ('zone.rong:mixinbooter:9.3') {
+        transitive = false
+    }
+    annotationProcessor ('zone.rong:mixinbooter:9.3') {
+        transitive = false
+    }
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
     // compile "some.group:artifact:version"
@@ -140,6 +151,8 @@ dependencies {
     compileOnly files("libs/RedstoneFlux-1.12-${version_redstoneflux}-universal.jar")
     compileOnly files("libs/buildcraft-all-7.99.24.8.jar")
     compileOnly files("libs/InventoryTweaks-1.64+dev.151.jar")
+    compileOnly files("libs/Mekanism-Community-Edition-1.12.2-9.12.10.jar")
+    //compileOnly files("libs/Mekanism-Community-Edition-1.12.2-9.12.10-sources.jar")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

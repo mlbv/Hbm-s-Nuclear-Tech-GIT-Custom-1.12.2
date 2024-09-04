@@ -20,6 +20,7 @@ public class ContainerMachineShredder extends Container {
 		
 		diFurnace = tedf;
 		
+		//inputs
 		this.addSlotToContainer(new SlotItemHandler(tedf.inventory, 0, 44, 18));
 		this.addSlotToContainer(new SlotItemHandler(tedf.inventory, 1, 62, 18));
 		this.addSlotToContainer(new SlotItemHandler(tedf.inventory, 2, 80, 18));
@@ -29,6 +30,7 @@ public class ContainerMachineShredder extends Container {
 		this.addSlotToContainer(new SlotItemHandler(tedf.inventory, 6, 44, 54));
 		this.addSlotToContainer(new SlotItemHandler(tedf.inventory, 7, 62, 54));
 		this.addSlotToContainer(new SlotItemHandler(tedf.inventory, 8, 80, 54));
+		//outputs
 		this.addSlotToContainer(new SlotMachineOutput(tedf.inventory, 9, 116, 18));
 		this.addSlotToContainer(new SlotMachineOutput(tedf.inventory, 10, 134, 18));
 		this.addSlotToContainer(new SlotMachineOutput(tedf.inventory, 11, 152, 18));
@@ -47,8 +49,10 @@ public class ContainerMachineShredder extends Container {
 		this.addSlotToContainer(new SlotMachineOutput(tedf.inventory, 24, 116, 108));
 		this.addSlotToContainer(new SlotMachineOutput(tedf.inventory, 25, 134, 108));
 		this.addSlotToContainer(new SlotMachineOutput(tedf.inventory, 26, 152, 108));
+		//Blades
 		this.addSlotToContainer(new SlotItemHandler(tedf.inventory, 27, 44, 108));
 		this.addSlotToContainer(new SlotItemHandler(tedf.inventory, 28, 80, 108));
+		//battery
 		this.addSlotToContainer(new SlotItemHandler(tedf.inventory, 29, 8, 108));
 		
 		for(int i = 0; i < 3; i++)

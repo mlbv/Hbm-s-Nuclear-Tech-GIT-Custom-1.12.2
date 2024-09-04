@@ -19,7 +19,8 @@
     "useDependencyInformation": true,
     "requiredMods": [
       "immersiveengineering",
-      "buildcraftcore"
+      "buildcraftcore",
+      "mixinbooter"
     ],
     "dependencies": [
       "mod_MinecraftForge",
