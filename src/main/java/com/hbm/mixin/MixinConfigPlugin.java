@@ -11,9 +11,7 @@ import java.util.Set;
 public class MixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
-    public void onLoad(String mixinPackage) {
-        // 初始化时调用
-    }
+    public void onLoad(String mixinPackage) {}
 
     @Override
     public String getRefMapperConfig() {
@@ -22,17 +20,17 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        // 仅当安装了 Mekanism 时才加载 MixinTileEntityFluidTank
         if (mixinClassName.equals("com.hbm.mixin.MixinTileEntityFluidTank")) {
             return Loader.isModLoaded("mekanism");
         }
+        // if (mixinClassName.equals("com.hbm.mixin.MixinTileFaucet")) {
+        //     return Loader.isModLoaded("tconstruct");
+        // }
         return true; // 其他 Mixin 默认加载
     }
 
     @Override
-    public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
-        // 可以留空或根据需要添加逻辑
-    }
+    public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {}
 
     @Override
     public List<String> getMixins() {
@@ -41,10 +39,8 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
 
     @Override
-    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-    }
+    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 
     @Override
-    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-    }
+    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 }

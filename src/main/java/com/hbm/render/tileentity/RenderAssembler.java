@@ -29,8 +29,9 @@ public class RenderAssembler extends TileEntitySpecialRenderer<TileEntityMachine
 
     @Override
     public void render(TileEntityMachineAssembler assembler, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+        // 渲染主体
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x + 0.5D, y, z + 0.5D);  // 修正平移操作，使得渲染相对方块坐标
+        GlStateManager.translate(x + 0.5D, y, z + 0.5D);  // 修正平移操作
 
         // 根据元数据旋转和平移
         switch (assembler.getBlockMetadata()) {
@@ -52,47 +53,66 @@ public class RenderAssembler extends TileEntitySpecialRenderer<TileEntityMachine
                 break;
         }
 
-        // 绑定纹理并渲染主体模型
+        // 渲染主体框架
         bindTexture(ResourceManager.assembler_body_tex);
         ResourceManager.assembler_body.renderAll();
 
         // 渲染物品模型
         if (assembler.recipe != -1 && shouldRender(assembler.getPos())) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(-1, 0.875, 0);  // 修正物品的渲染位置
-
-            try {
-                ItemStack stack = AssemblerRecipes.recipeList.get(assembler.recipe).toStack();
-                GlStateManager.translate(1, 0, 1);
-                if (!(stack.getItem() instanceof ItemBlock)) {
-                    GlStateManager.rotate(-90, 1F, 0F, 0F);
-                } else {
-                    GlStateManager.scale(0.5, 0.5, 0.5);
-                    GlStateManager.translate(0, -0.875, -2);
-                }
-
-                IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, assembler.getWorld(), null);
-                model = ForgeHooksClient.handleCameraTransforms(model, TransformType.FIXED, false);
-                Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-                GlStateManager.translate(0.0F, 1.0F - 0.0625F * 165 / 100, 0.0F);
-                Minecraft.getMinecraft().getRenderItem().renderItem(stack, model);
-            } catch (Exception ex) {
-                // Log or handle exception as needed
-            }
-
-            GlStateManager.popMatrix();
+            renderItemInAssembler(assembler);
         }
 
         GlStateManager.popMatrix();
-        if(shouldRender(assembler.getPos())){
+
+        // 渲染滑块和齿轮
+        if (shouldRender(assembler.getPos())) {
             renderSlider(assembler, x, y, z, partialTicks);
         }
     }
+
+    private void renderItemInAssembler(TileEntityMachineAssembler assembler) {
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(-1, 0.875, 0);  // 修正物品的渲染位置
+
+        try {
+            ItemStack stack = AssemblerRecipes.recipeList.get(assembler.recipe).toStack();
+            GlStateManager.translate(1, 0, 1);
+
+            if (!(stack.getItem() instanceof ItemBlock)) {
+                GlStateManager.rotate(-90, 1F, 0F, 0F);
+            } else {
+                GlStateManager.scale(0.5, 0.5, 0.5);
+                GlStateManager.translate(0, -0.875, -2);
+            }
+
+            // 启用透明度和深度混合
+            GlStateManager.enableBlend();
+            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            GlStateManager.depthMask(false);  // 禁用深度写入以便处理透明度
+
+            IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, assembler.getWorld(), null);
+            model = ForgeHooksClient.handleCameraTransforms(model, TransformType.FIXED, false);
+            Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            GlStateManager.translate(0.0F, 1.0F - 0.0625F * 165 / 100, 0.0F);
+            Minecraft.getMinecraft().getRenderItem().renderItem(stack, model);
+
+            // 重新启用深度写入
+            GlStateManager.depthMask(true);  
+            GlStateManager.disableBlend();
+
+        } catch (Exception ex) {
+            // Log or handle exception as needed
+        }
+
+        GlStateManager.popMatrix();
+    }
+
     private boolean shouldRender(BlockPos pos) {
         EntityPlayer player = Minecraft.getMinecraft().player;
         double distance = player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ());
         return distance <= RENDER_DISTANCE * RENDER_DISTANCE;
     }
+
     public void renderSlider(TileEntityMachineAssembler tileEntity, double x, double y, double z, float f) {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
@@ -117,7 +137,6 @@ public class RenderAssembler extends TileEntitySpecialRenderer<TileEntityMachine
         }
 
         bindTexture(ResourceManager.assembler_slider_tex);
-
         int offset = (int) (System.currentTimeMillis() % 5000) / 5;
 
         if (offset > 500) {
@@ -131,7 +150,6 @@ public class RenderAssembler extends TileEntitySpecialRenderer<TileEntityMachine
         ResourceManager.assembler_slider.renderAll();
 
         bindTexture(ResourceManager.assembler_arm_tex);
-
         double sway = Math.sin((System.currentTimeMillis() % 2000) / 1000.0 * Math.PI / 50) * 0.3;
 
         if (tileEntity.isProgressing) {
@@ -139,9 +157,7 @@ public class RenderAssembler extends TileEntitySpecialRenderer<TileEntityMachine
         }
 
         ResourceManager.assembler_arm.renderAll();
-
         GlStateManager.popMatrix();
-
         renderCogs(tileEntity, x, y, z, f);
     }
 
@@ -171,37 +187,26 @@ public class RenderAssembler extends TileEntitySpecialRenderer<TileEntityMachine
         }
 
         bindTexture(ResourceManager.assembler_cog_tex);
-
         int rotation = (int) (System.currentTimeMillis() % (360 * 5)) / 5;
 
         if (!tileEntity.isProgressing) {
             rotation = 0;
         }
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(-0.6, 0.75, 1.0625);
-        GlStateManager.rotate(-rotation, 0F, 0F, 1F);
-        ResourceManager.assembler_cog.renderAll();
-        GlStateManager.popMatrix();
-
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(0.6, 0.75, 1.0625);
-        GlStateManager.rotate(rotation, 0F, 0F, 1F);
-        ResourceManager.assembler_cog.renderAll();
-        GlStateManager.popMatrix();
-
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(-0.6, 0.75, -1.0625);
-        GlStateManager.rotate(-rotation, 0F, 0F, 1F);
-        ResourceManager.assembler_cog.renderAll();
-        GlStateManager.popMatrix();
-
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(0.6, 0.75, -1.0625);
-        GlStateManager.rotate(rotation, 0F, 0F, 1F);
-        ResourceManager.assembler_cog.renderAll();
-        GlStateManager.popMatrix();
+        renderCog(-0.6, 0.75, 1.0625, -rotation);
+        renderCog(0.6, 0.75, 1.0625, rotation);
+        renderCog(-0.6, 0.75, -1.0625, -rotation);
+        renderCog(0.6, 0.75, -1.0625, rotation);
 
         GlStateManager.popMatrix();
     }
+
+    private void renderCog(double x, double y, double z, int rotation) {
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x, y, z);
+        GlStateManager.rotate(rotation, 0F, 0F, 1F);
+        ResourceManager.assembler_cog.renderAll();
+        GlStateManager.popMatrix();
+    }
 }
+

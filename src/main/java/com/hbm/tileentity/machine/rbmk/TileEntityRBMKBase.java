@@ -57,6 +57,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class TileEntityRBMKBase extends TileEntity implements INBTPacketReceiver, ITickable, IControllable {
 
+	private int ticksSinceLastSync = 0;
+
 	public static int rbmkHeight = 4;
 	
 	public double heat = 20.0D;
@@ -121,8 +123,11 @@ public abstract class TileEntityRBMKBase extends TileEntity implements INBTPacke
 			
 			NBTTagCompound data = new NBTTagCompound();
 			this.writeToNBT(data);
-			this.networkPack(data, trackingRange());
-			
+			ticksSinceLastSync++;
+			if (ticksSinceLastSync >= 10) {//update client every 10 ticks
+                this.networkPack(data, trackingRange()); // 每秒发送数据给客户端
+                ticksSinceLastSync = 0; // 重置计时器
+            }
 		}
 	}
 

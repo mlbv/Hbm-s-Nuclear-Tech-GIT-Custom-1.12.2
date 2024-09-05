@@ -152,7 +152,8 @@ dependencies {
     compileOnly files("libs/buildcraft-all-7.99.24.8.jar")
     compileOnly files("libs/InventoryTweaks-1.64+dev.151.jar")
     compileOnly files("libs/Mekanism-Community-Edition-1.12.2-9.12.10.jar")
-    //compileOnly files("libs/Mekanism-Community-Edition-1.12.2-9.12.10-sources.jar")
+    // compileOnly files("libs/TConstruct-1.12.2-2.13.0.183.jar")
+    // compileOnly files("libs/Mantle-1.12-1.3.3.55.jar")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
