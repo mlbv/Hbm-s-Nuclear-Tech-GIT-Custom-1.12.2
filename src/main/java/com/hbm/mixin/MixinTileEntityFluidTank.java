@@ -23,11 +23,11 @@ public abstract class MixinTileEntityFluidTank extends TileEntityContainerBlock 
     @Shadow
     public FluidTank fluidTank;
 
-    @Inject(method = "manageInventory", at = @At("HEAD"))
+    @Inject(method = "manageInventory", at = @At("HEAD"), cancellable = true)
     private void injectSpecialFill(CallbackInfo ci) {
         if (handleSpecialContainer()) {
             //System.out.println("Called handleSpecialContainer!");
-            return;
+            ci.cancel();
         }
     }
 

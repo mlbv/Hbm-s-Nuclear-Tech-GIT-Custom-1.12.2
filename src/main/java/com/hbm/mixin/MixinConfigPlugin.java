@@ -26,6 +26,9 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
         // if (mixinClassName.equals("com.hbm.mixin.MixinTileFaucet")) {
         //     return Loader.isModLoaded("tconstruct");
         // }
+        if (mixinClassName.equals("MixinComposterBlock$ItemsForComposter")) {
+            return Loader.isModLoaded("futuremc");
+        }
         return true; // 其他 Mixin 默认加载
     }
 
