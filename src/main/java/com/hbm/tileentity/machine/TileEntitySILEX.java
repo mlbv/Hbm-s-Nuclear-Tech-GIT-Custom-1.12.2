@@ -106,7 +106,7 @@ public class TileEntitySILEX extends TileEntityMachineBase implements ITickable,
 		
 		this.currentFill = nbt.getInteger("fill");
 		this.progress = nbt.getInteger("progress");
-		this.mode = EnumWavelengths.valueOf(nbt.getString("mode"));
+		this.mode = EnumWavelengths.valueOfOrDefault(nbt.getString("mode"), EnumWavelengths.NULL);
 		
 		if(this.currentFill > 0) {
 			this.current = new ComparableStack(Item.getItemById(nbt.getInteger("item")), 1, nbt.getInteger("meta"));

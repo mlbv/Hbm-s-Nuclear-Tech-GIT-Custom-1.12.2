@@ -26,10 +26,19 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
         // if (mixinClassName.equals("com.hbm.mixin.MixinTileFaucet")) {
         //     return Loader.isModLoaded("tconstruct");
         // }
-        if (mixinClassName.equals("MixinComposterBlock$ItemsForComposter")) {
+        if (mixinClassName.equals("com.hbm.mixin.MixinComposterBlock$ItemsForComposter")) {
             return Loader.isModLoaded("futuremc");
         }
-        return true; // 其他 Mixin 默认加载
+        if (mixinClassName.equals("com.hbm.mixin.MixinLuckyTickHandler")) {
+            return Loader.isModLoaded("lucky");
+        }
+        if (mixinClassName.equals("com.hbm.mixin.MixinModSettings")) {
+            return Loader.isModLoaded("xaerominimap");
+        }
+        if (mixinClassName.equals("com.hbm.mixin.MixinThreadContributorSpecialsDownloader")) {
+            return Loader.isModLoaded("immersiveengineering");
+        }
+        return false;
     }
 
     @Override

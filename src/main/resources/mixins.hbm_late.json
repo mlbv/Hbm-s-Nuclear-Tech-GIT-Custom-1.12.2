@@ -8,9 +8,13 @@
   "plugin": "com.hbm.mixin.MixinConfigPlugin",
   "mixins": [
     "MixinTileEntityFluidTank",
-    "MixinComposterBlock$ItemsForComposter"
+    "MixinComposterBlock$ItemsForComposter",
+    "MixinModSettings",
+    "MixinThreadContributorSpecialsDownloader"
   ],
-  "client": [],
+  "client": [
+    "MixinLuckyTickHandler"
+  ],
   "server": [],
   "injectors": {
     "defaultRequire": 1

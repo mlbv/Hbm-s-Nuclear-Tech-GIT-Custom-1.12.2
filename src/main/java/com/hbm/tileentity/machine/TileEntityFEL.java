@@ -15,6 +15,7 @@ import com.hbm.tileentity.TileEntityMachineBase;
 import com.hbm.util.ContaminationUtil;
 import com.hbm.util.ContaminationUtil.ContaminationType;
 import com.hbm.util.ContaminationUtil.HazardType;
+import com.llamalad7.mixinextras.lib.apache.commons.ObjectUtils.Null;
 import com.hbm.packet.LoopedSoundPacket;
 import com.hbm.packet.PacketDispatcher;
 
@@ -252,7 +253,7 @@ public class TileEntityFEL extends TileEntityMachineBase implements ITickable, I
 	@Override
 	public void networkUnpack(NBTTagCompound nbt) {
 		this.power = nbt.getLong("power");
-		this.mode = EnumWavelengths.valueOf(nbt.getString("mode"));
+		this.mode = EnumWavelengths.valueOfOrDefault(nbt.getString("mode"), EnumWavelengths.NULL);
 		this.isOn = nbt.getBoolean("isOn");
 		this.distance = nbt.getInteger("distance");
 		this.missingValidSilex = nbt.getBoolean("valid");
@@ -275,7 +276,7 @@ public class TileEntityFEL extends TileEntityMachineBase implements ITickable, I
 		super.readFromNBT(nbt);
 		
 		this.power = nbt.getLong("power");
-		this.mode = EnumWavelengths.valueOf(nbt.getString("mode"));
+		this.mode = EnumWavelengths.valueOfOrDefault(nbt.getString("mode"), EnumWavelengths.NULL);
 		this.isOn = nbt.getBoolean("isOn");
 		this.missingValidSilex = nbt.getBoolean("valid");
 		this.distance = nbt.getInteger("distance");
