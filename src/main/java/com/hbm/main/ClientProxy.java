@@ -473,7 +473,6 @@ import com.hbm.tileentity.deco.TileEntityDecoPoleTop;
 import com.hbm.tileentity.deco.TileEntityObjTester;
 import com.hbm.tileentity.deco.TileEntitySpinnyLight;
 import com.hbm.tileentity.deco.TileEntityTestRender;
-import com.hbm.tileentity.machine.TileEntityFurnaceCombination;
 import com.hbm.tileentity.machine.oil.TileEntityMachinePumpjack;
 import com.hbm.tileentity.machine.oil.TileEntityMachineFrackingTower;
 import com.hbm.tileentity.machine.oil.TileEntityMachineFractionTower;
@@ -603,7 +602,7 @@ public class ClientProxy extends ServerProxy {
 	
 	@Override
 	public File getDataDir() {
-		return Minecraft.getMinecraft().mcDataDir;
+		return Minecraft.getMinecraft().gameDir;
 	}
 	
 	@Override
@@ -1940,7 +1939,7 @@ public class ClientProxy extends ServerProxy {
 			String mode = data.getString("mode");
 			if("crucible".equals(name)){
 				if("equip".equals(mode)){
-					HbmAnimations.hotbar[slot] = new BlenderAnimation(player.getHeldItem(hand).getItem().getUnlocalizedName(), System.currentTimeMillis(), 1, ResourceManager.crucible_equip, new EndResult(EndType.STAY));
+					HbmAnimations.hotbar[slot] = new BlenderAnimation(player.getHeldItem(hand).getItem().getTranslationKey(), System.currentTimeMillis(), 1, ResourceManager.crucible_equip, new EndResult(EndType.STAY));
 				}
 				if("crucible".equals(mode)) {
 					BusAnimation animation = new BusAnimation()
@@ -1949,7 +1948,7 @@ public class ClientProxy extends ServerProxy {
 									.addKeyframe(new BusAnimationKeyframe(90, 0, 1, 800))
 									.addKeyframe(new BusAnimationKeyframe(0, 0, 1, 50)));
 
-					HbmAnimations.hotbar[slot] = new Animation(player.getHeldItem(hand).getItem().getUnlocalizedName(), System.currentTimeMillis(), animation);
+					HbmAnimations.hotbar[slot] = new Animation(player.getHeldItem(hand).getItem().getTranslationKey(), System.currentTimeMillis(), animation);
 				}
 				if("swing".equals(mode)){
 					BusAnimation animation = new BusAnimation()
@@ -1960,7 +1959,7 @@ public class ClientProxy extends ServerProxy {
 						HbmAnimations.hotbar[slot].animation = animation;
 						HbmAnimations.hotbar[slot].startMillis = System.currentTimeMillis();
 					} else {
-						HbmAnimations.hotbar[slot] = new Animation(player.getHeldItem(hand).getItem().getUnlocalizedName(), System.currentTimeMillis(), animation);
+						HbmAnimations.hotbar[slot] = new Animation(player.getHeldItem(hand).getItem().getTranslationKey(), System.currentTimeMillis(), animation);
 					}
 				}
 				if("cSwing".equals(mode)) {
@@ -1985,13 +1984,13 @@ public class ClientProxy extends ServerProxy {
 							HbmAnimations.hotbar[slot].animation = animation;
 							HbmAnimations.hotbar[slot].startMillis = System.currentTimeMillis();
 						} else {
-							HbmAnimations.hotbar[slot] = new Animation(player.getHeldItem(hand).getItem().getUnlocalizedName(), System.currentTimeMillis(), animation);
+							HbmAnimations.hotbar[slot] = new Animation(player.getHeldItem(hand).getItem().getTranslationKey(), System.currentTimeMillis(), animation);
 						}
 					}
 				}
 			} else if("hs_sword".equals(name)){
 				if("equip".equals(mode)){
-					HbmAnimations.hotbar[slot] = new BlenderAnimation(player.getHeldItem(hand).getItem().getUnlocalizedName(), System.currentTimeMillis(), 1, ResourceManager.hs_sword_equip, new EndResult(EndType.STAY));
+					HbmAnimations.hotbar[slot] = new BlenderAnimation(player.getHeldItem(hand).getItem().getTranslationKey(), System.currentTimeMillis(), 1, ResourceManager.hs_sword_equip, new EndResult(EndType.STAY));
 				} else if("swing".equals(mode)){
 					BusAnimation animation = new BusAnimation()
 							.addBus("SWING", new BusAnimationSequence()
@@ -2001,12 +2000,12 @@ public class ClientProxy extends ServerProxy {
 						HbmAnimations.hotbar[slot].animation = animation;
 						HbmAnimations.hotbar[slot].startMillis = System.currentTimeMillis();
 					} else {
-						HbmAnimations.hotbar[slot] = new Animation(player.getHeldItem(hand).getItem().getUnlocalizedName(), System.currentTimeMillis(), animation);
+						HbmAnimations.hotbar[slot] = new Animation(player.getHeldItem(hand).getItem().getTranslationKey(), System.currentTimeMillis(), animation);
 					}
 				}
 			} else if("hf_sword".equals(name)){
 				if("equip".equals(mode)){
-					HbmAnimations.hotbar[slot] = new BlenderAnimation(player.getHeldItem(hand).getItem().getUnlocalizedName(), System.currentTimeMillis(), 1, ResourceManager.hf_sword_equip, new EndResult(EndType.STAY));
+					HbmAnimations.hotbar[slot] = new BlenderAnimation(player.getHeldItem(hand).getItem().getTranslationKey(), System.currentTimeMillis(), 1, ResourceManager.hf_sword_equip, new EndResult(EndType.STAY));
 				} else if("swing".equals(mode)){
 					BusAnimation animation = new BusAnimation()
 							.addBus("SWING", new BusAnimationSequence()
@@ -2016,7 +2015,7 @@ public class ClientProxy extends ServerProxy {
 						HbmAnimations.hotbar[slot].animation = animation;
 						HbmAnimations.hotbar[slot].startMillis = System.currentTimeMillis();
 					} else {
-						HbmAnimations.hotbar[slot] = new Animation(player.getHeldItem(hand).getItem().getUnlocalizedName(), System.currentTimeMillis(), animation);
+						HbmAnimations.hotbar[slot] = new Animation(player.getHeldItem(hand).getItem().getTranslationKey(), System.currentTimeMillis(), animation);
 					}
 				}
 			}

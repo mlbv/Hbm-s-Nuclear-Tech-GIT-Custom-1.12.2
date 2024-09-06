@@ -227,9 +227,9 @@ public class TileEntityFurnaceCombination extends TileEntityMachineBase implemen
     }
     private void spawnSmokeParticles(BlockPos pos, EnumFacing direction) {
         World world = this.getWorld();
-        double x = pos.getX() + 0.5 + direction.getFrontOffsetX() * 0.5;
+        double x = pos.getX() + 0.5 + direction.getXOffset() * 0.5;
         double y = pos.getY() + 1;
-        double z = pos.getZ() + 0.5 + direction.getFrontOffsetZ() * 0.5;
+        double z = pos.getZ() + 0.5 + direction.getZOffset() * 0.5;
 
         world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, x, y, z, 0.0D, 0.0D, 0.0D);
     }
@@ -257,7 +257,7 @@ public class TileEntityFurnaceCombination extends TileEntityMachineBase implemen
         }
     
         conPos = new ArrayList<>();
-        EnumFacing dir = EnumFacing.getFront(this.getBlockMetadata());
+        EnumFacing dir = EnumFacing.byIndex(this.getBlockMetadata());
     
         // 检查并过滤非法的方向
         if (dir == EnumFacing.DOWN || dir == EnumFacing.UP) {
