@@ -55,6 +55,10 @@ public class Tuple {
                 return other.value == null;
 			} else return value.equals(other.value);
         }
+
+		public static <X, Y> Pair<X, Y> of(X x, Y y) {
+			return new Pair<>(x, y);
+		}
 	}
 
 	public static class Triplet<X,Y,Z> {
@@ -114,6 +118,10 @@ public class Tuple {
                 return other.z == null;
 			} else return z.equals(other.z);
         }
+
+		public static <X, Y, Z> Triplet<X, Y, Z> of(X x, Y y, Z z) {
+			return new Triplet<>(x, y, z);
+		}
 	}
 
 	public static class Quartet<W,X,Y,Z> {
@@ -184,6 +192,10 @@ public class Tuple {
 		
 		public Z getZ() {
 			return this.z;
+		}
+
+		public static <W, X, Y, Z> Quartet<W, X, Y, Z> of(W w, X x, Y y, Z z) {
+			return new Quartet<>(w, x, y, z);
 		}
 	}
 }

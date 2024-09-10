@@ -289,7 +289,7 @@ public class TileEntityMachineShredder extends TileEntityMachineBase implements 
 				this.getGearRight() > 0 && this.getGearRight() < 3)
 		for(int i = 0; i < 9; i++)
 		{
-			//If the output is not defined, return `ModItems.scrap`, so there is no need to call `getShredderResult` to verify whether it can be processed.
+			//If the output is not defined, it will be `ModItems.scrap`, so there is no need to call `getShredderResult` to verify whether it can be processed.
 			if(!inventory.getStackInSlot(i).isEmpty() && inventory.getStackInSlot(i).getCount() > 0 && hasSpace(inventory.getStackInSlot(i)))
 			{
 				return true;

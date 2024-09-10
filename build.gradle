@@ -137,7 +137,7 @@ dependencies {
     // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
 
     // compile against the JEI API but do not include it at runtime
-    compileOnly files("libs/jei_1.12.2-${version_jei}.jar")
+    compileOnly files("libs/jei_1.12.2-${version_jei}-api.jar")
     // at runtime, use the full JEI jar
     runtimeOnly files("libs/jei_1.12.2-${version_jei}.jar")
 

@@ -2,7 +2,6 @@ package com.hbm.blocks.gas;
 
 import java.util.Random;
 
-import com.hbm.interfaces.Untested;
 import com.hbm.lib.ForgeDirection;
 
 import net.minecraft.block.Block;
@@ -16,6 +15,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockGasFlammable extends BlockGasBase {
+
+	private boolean isCombusting = false;
 
 	public BlockGasFlammable(String s) {
 		super(0.8F, 0.8F, 0.2F, s);
@@ -59,20 +60,27 @@ public class BlockGasFlammable extends BlockGasBase {
 		}
 	}
 	
-	@Untested
 	@Override
-	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos){
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
+		if (isCombusting) return;
+		isCombusting = true;
+
 		MutableBlockPos posN = new BlockPos.MutableBlockPos();
-		for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 			posN.setPos(pos.getX() + dir.offsetX, pos.getY() + dir.offsetY, pos.getZ() + dir.offsetZ);
-			if(!world.isBlockLoaded(posN)) return;
+			if (!world.isBlockLoaded(posN)) {
+				isCombusting = false;
+				return;
+			}
 			IBlockState b = world.getBlockState(posN);
-			
-			if(isFireSource(b)) {
+
+			if (isFireSource(b)) {
 				world.scheduleUpdate(pos, this, 2);
+				isCombusting = false;
 				return;
 			}
 		}
+		isCombusting = false;
 	}
 	
 	protected void combust(World world, BlockPos p) {

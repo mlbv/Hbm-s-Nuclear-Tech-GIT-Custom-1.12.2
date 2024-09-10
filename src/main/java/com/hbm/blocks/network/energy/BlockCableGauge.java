@@ -173,4 +173,15 @@ public class BlockCableGauge extends BlockContainer implements ILookOverlay, ITo
 			return new Object[] {deltaLastSecond};
 		}
 	}
+	
+	@Override
+	public boolean hasComparatorInputOverride(IBlockState state){
+		return true;
+	}
+
+	@Override
+	public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos){
+		TileEntityCableGauge entity = (TileEntityCableGauge) worldIn.getTileEntity(pos);
+        return entity != null ? (int) Math.min(15, Math.ceil(Math.log10(entity.deltaLastSecond))) : 0;
+	}
 }
