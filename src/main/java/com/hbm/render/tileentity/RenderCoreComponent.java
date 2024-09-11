@@ -17,6 +17,7 @@ import com.hbm.tileentity.machine.TileEntityCoreStabilizer;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.util.math.Vec3d;
 
 public class RenderCoreComponent extends TileEntitySpecialRenderer<TileEntityMachineBase> {
 
@@ -78,7 +79,7 @@ public class RenderCoreComponent extends TileEntitySpecialRenderer<TileEntityMac
 	        int range = ((TileEntityCoreStabilizer)tileEntity).beam;
 
 	        if(range > 0) {
-	    		BeamPronter.prontBeam(Vec3.createVectorHelper(0, 0, range), EnumWaveType.STRAIGHT, EnumBeamType.SOLID, 0x002333, 0x7F7F7F, 0, 1, 0F, 2, 0.125F);
+	    		BeamPronter.prontBeamwithDepth(new Vec3d(0, 0, range), EnumWaveType.RANDOM, EnumBeamType.SOLID, 0x002333, 0x7F7F7F, 0, 1, 0.01F, 2, 0.125F);
 	    		BeamPronter.prontBeam(Vec3.createVectorHelper(0, 0, range), EnumWaveType.SPIRAL, EnumBeamType.SOLID, 0x002333, 0x7F7F7F, (int)tileEntity.getWorld().getTotalWorldTime() * -8 % 360, range * 3, 0.125F, 2, 0.04F);
 	    		BeamPronter.prontBeam(Vec3.createVectorHelper(0, 0, range), EnumWaveType.SPIRAL, EnumBeamType.SOLID, 0x003C56, 0x7F7F7F, (int)tileEntity.getWorld().getTotalWorldTime() * -8 % 360 + 180, range * 3, 0.125F, 2, 0.04F);
 	        }
@@ -90,7 +91,7 @@ public class RenderCoreComponent extends TileEntitySpecialRenderer<TileEntityMac
 	        
 	        if(range > 0) {
 	        	float width = (float)Math.max(1, Math.log10(((TileEntityCoreEmitter)tileEntity).prev) - 6) / 8F;
-		        BeamPronter.prontBeam(Vec3.createVectorHelper(0, 0, range), EnumWaveType.STRAIGHT, EnumBeamType.SOLID, 0x401500, 0x7F7F7F, 0, 1, 0F, 2, width);
+		        BeamPronter.prontBeamwithDepth(new Vec3d(0, 0, range), EnumWaveType.RANDOM, EnumBeamType.SOLID, 0x401500, 0x7F7F7F, 0, 1, 0.01F, 2, width);
 		        BeamPronter.prontBeam(Vec3.createVectorHelper(0, 0, range), EnumWaveType.RANDOM, EnumBeamType.SOLID, 0x401500, 0x7F7F7F, (int)tileEntity.getWorld().getTotalWorldTime() % 1000, (int)(0.3F * range/width), width * 0.75F, 2, width * 0.5F);
 		        BeamPronter.prontBeam(Vec3.createVectorHelper(0, 0, range), EnumWaveType.RANDOM, EnumBeamType.SOLID, 0x5B1D00, 0x7F7F7F, (int)tileEntity.getWorld().getTotalWorldTime() % 1000 + 1, (int)(0.3F * range/width), width * 0.75F, 2, width * 0.5F);
 	        }

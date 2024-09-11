@@ -64,7 +64,7 @@ public class RenderTurretMaxwell extends RenderTurretBase<TileEntityTurretMaxwel
 
 			BeamPronter.prontBeam(Vec3.createVectorHelper(length, 0, 0), EnumWaveType.RANDOM, EnumBeamType.SOLID, 0x00487F, 0xFFFFFF, (int)(worldTime) % 1000, (int)length, 0.125F, 2, 0.0625F);
 			GL11.glTranslated(offset, 0, 0);
-			BeamPronter.prontBeam(Vec3.createVectorHelper(length-offset, 0, 0), EnumWaveType.STRAIGHT, EnumBeamType.SOLID, 0x002038, 0x002038, 0, 1, 0, 3, 0.0625F*5F);
+			BeamPronter.prontBeamwithDepth(new Vec3d(length - offset, 0, 0), EnumWaveType.RANDOM, EnumBeamType.SOLID, 0x002038, 0x002038, 0, 1, 0.01F, 3, 0.0625F * 5F);
 			GL11.glPopMatrix();
 		}
 

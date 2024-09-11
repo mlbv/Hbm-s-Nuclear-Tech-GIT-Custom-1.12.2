@@ -78,7 +78,7 @@ public class RenderLaserMiner extends TileEntitySpecialRenderer<TileEntityMachin
 			length = vec.lengthVector();
 			GL11.glTranslated(nVec.xCoord, nVec.yCoord - 1, nVec.zCoord);
 			int range = (int)Math.ceil(length * 0.5);
-			BeamPronter.prontBeam(vec, EnumWaveType.STRAIGHT, EnumBeamType.SOLID, 0xa00000, 0xFFFFFF, 0, 1, 0, 3, 0.09F);
+			BeamPronter.prontBeamwithDepth(vec, EnumWaveType.RANDOM, EnumBeamType.SOLID, 0xa00000, 0xFFFFFF, 0, 1, 0.01F, 3, 0.09F);
 		}
 
 		GL11.glPopMatrix();

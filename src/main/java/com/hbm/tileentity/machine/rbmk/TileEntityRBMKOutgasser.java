@@ -1,6 +1,5 @@
 package com.hbm.tileentity.machine.rbmk;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.hbm.blocks.ModBlocks;
@@ -8,19 +7,16 @@ import com.hbm.entity.projectile.EntityRBMKDebris.DebrisType;
 import com.hbm.forgefluid.FFUtils;
 import com.hbm.forgefluid.ModForgeFluids;
 import com.hbm.interfaces.ITankPacketAcceptor;
-import com.hbm.inventory.RecipesCommon.ComparableStack;
 import com.hbm.inventory.RBMKOutgasserRecipes;
-import com.hbm.util.ContaminationUtil;
+import com.hbm.inventory.control_panel.DataValue;
+import com.hbm.inventory.control_panel.DataValueFloat;
 import com.hbm.items.ModItems;
 import com.hbm.items.machine.ItemFluidIcon;
 import com.hbm.packet.FluidTankPacket;
 import com.hbm.packet.PacketDispatcher;
-import com.hbm.inventory.control_panel.DataValue;
-import com.hbm.inventory.control_panel.DataValueFloat;
 import com.hbm.tileentity.machine.rbmk.TileEntityRBMKConsole.ColumnType;
+import com.hbm.util.ContaminationUtil;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -93,7 +89,7 @@ public class TileEntityRBMKOutgasser extends TileEntityRBMKSlottedBase implement
 			
 			progress += flux * RBMKDials.getOutgasserMod(world);
 			
-			if(progress > duration) {
+			if(progress >= duration) {
 				process();
 				this.markDirty();
 			}
@@ -103,7 +99,7 @@ public class TileEntityRBMKOutgasser extends TileEntityRBMKSlottedBase implement
 			ContaminationUtil.neutronActivateItem(inventory.getStackInSlot(0), (float)(flux * 0.001), 1F);
 			this.markDirty();
 		}
-		this.usedFlux = flux;
+		this.usedFlux = flux * RBMKDials.getOutgasserMod(world);
 	}
 	
 	
