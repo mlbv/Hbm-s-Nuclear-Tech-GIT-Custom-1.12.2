@@ -26,14 +26,20 @@ public class IrradiationChannel extends VirtualizedRegistry<Tuple.Pair<RecipesCo
         this.addBackup(pair);
     }
 
-    public void removeAll(){
-        for (Iterator<RecipesCommon.ComparableStack> it = rbmkOutgasserRecipes.keySet().iterator(); it.hasNext(); ) {
-            RecipesCommon.ComparableStack stack = it.next();
-            Object[] param = rbmkOutgasserRecipes.get(stack);
-            this.addBackup(new Tuple.Pair<>(stack, param));
+    public void removeAll() {
+        for (Iterator<Object> it = rbmkOutgasserRecipes.keySet().iterator(); it.hasNext(); ) {
+            Object key = it.next();
+            Object[] param = rbmkOutgasserRecipes.get(key);
+    
+            // 仅当 key 为 ComparableStack 时执行 addBackup
+            if (key instanceof RecipesCommon.ComparableStack) {
+                RecipesCommon.ComparableStack stack = (RecipesCommon.ComparableStack) key;
+                this.addBackup(new Tuple.Pair<>(stack, param));
+            }
+            // 从配方列表中删除该配方
             it.remove();
         }
-    }
+    }    
 
     public void removeRecipe(IIngredient ingredient){
         for(ItemStack stack:ingredient.getMatchingStacks()){

@@ -44,17 +44,17 @@ public class FusionRecipes {
 	
 	public static int getBreedingLevel(Fluid plasma) {
 		if(plasma == ModForgeFluids.plasma_dt){
-			return 2;
+			return 1000;
 		} else if(plasma == ModForgeFluids.plasma_hd){
-			return 1;
+			return 1000;
 		} else if(plasma == ModForgeFluids.plasma_ht){
-			return 1;
+			return 1000;
 		} else if(plasma == ModForgeFluids.plasma_xm){
-			return 3;
+			return 3000;
 		} else if(plasma == ModForgeFluids.plasma_put){
-			return 4;
+			return 3000;
 		} else if(plasma == ModForgeFluids.plasma_bf){
-			return 5;
+			return 4000;
 		}
 		return 0;
 	}

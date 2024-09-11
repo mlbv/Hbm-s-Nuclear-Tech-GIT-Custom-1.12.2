@@ -7,9 +7,8 @@ import com.hbm.blocks.machine.MachineITER;
 import com.hbm.forgefluid.FFUtils;
 import com.hbm.forgefluid.ModForgeFluids;
 import com.hbm.interfaces.ITankPacketAcceptor;
-import com.hbm.inventory.BreederRecipes;
-import com.hbm.inventory.BreederRecipes.BreederRecipe;
 import com.hbm.inventory.FusionRecipes;
+import com.hbm.inventory.RBMKOutgasserRecipes;
 import com.hbm.items.ModItems;
 import com.hbm.items.special.ItemFusionShield;
 import com.hbm.lib.HBMSoundHandler;
@@ -21,6 +20,7 @@ import com.hbm.packet.FluidTypePacketTest;
 import com.hbm.packet.PacketDispatcher;
 import com.hbm.render.amlfrom1710.Vec3;
 import com.hbm.tileentity.TileEntityMachineBase;
+import com.hbm.tileentity.machine.rbmk.RBMKDials;
 import com.hbm.saveddata.RadiationSavedData;
 
 import api.hbm.energy.IEnergyUser;
@@ -56,7 +56,7 @@ public class TileEntityITER extends TileEntityMachineBase implements ITickable, 
 	public Fluid plasmaType;
 	
 	public int progress;
-	public static final int duration = 100;
+	public static int duration = 100;
 
 	@SideOnly(Side.CLIENT)
 	public int blanket;
@@ -199,24 +199,26 @@ public class TileEntityITER extends TileEntityMachineBase implements ITickable, 
 	
 	private void doBreederStuff() {
 
-		if(plasma.getFluidAmount() == 0) {
+		if(plasma.getFluidAmount() == 0 || inventory.getStackInSlot(1).isEmpty()) {
 			this.progress = 0;
 			return;
 		}
 
-		BreederRecipe out = BreederRecipes.getOutput(inventory.getStackInSlot(1));
-		
-		if(inventory.getStackInSlot(1).getItem() == ModItems.meteorite_sword_irradiated)
-			out = new BreederRecipe(ModItems.meteorite_sword_fused, 1);
-
-		if(inventory.getStackInSlot(1).getItem() == ModItems.meteorite_sword_fused)
-			out = new BreederRecipe(ModItems.meteorite_sword_baleful, 4);
-
-		if(out == null) {
+		ItemStack output = RBMKOutgasserRecipes.getOutput(inventory.getStackInSlot(1));
+		int requiredFlux = RBMKOutgasserRecipes.getRequiredFlux(inventory.getStackInSlot(1));
+		if(inventory.getStackInSlot(1).getItem() == ModItems.meteorite_sword_irradiated){
+			output = new ItemStack(ModItems.meteorite_sword_fused, 1);
+			requiredFlux = 1000;
+		}
+		if(inventory.getStackInSlot(1).getItem() == ModItems.meteorite_sword_fused){
+			output = new ItemStack(ModItems.meteorite_sword_baleful, 1);
+			requiredFlux = 4000;
+		}
+		if(requiredFlux == -1) {
 			this.progress = 0;
 			return;
 		}
-
+		duration = requiredFlux;
 		if(!inventory.getStackInSlot(2).isEmpty() && inventory.getStackInSlot(2).getCount() >= inventory.getStackInSlot(2).getMaxStackSize()) {
 			this.progress = 0;
 			return;
@@ -224,19 +226,15 @@ public class TileEntityITER extends TileEntityMachineBase implements ITickable, 
 
 		int level = FusionRecipes.getBreedingLevel(plasmaType);
 
-		if(out.heat > level) {
+		progress += level * RBMKDials.getOutgasserMod(world);
+
+		if(progress >= duration) {
 			this.progress = 0;
-			return;
-		}	
-
-		progress++;
-
-		if(progress > duration) {
 
 			if(!inventory.getStackInSlot(2).isEmpty()) {
 				inventory.getStackInSlot(2).grow(1);
 			} else {
-				inventory.setStackInSlot(2, out.output.copy());
+				inventory.setStackInSlot(2, output.copy());
 			}
 
 			inventory.getStackInSlot(1).shrink(1);
@@ -425,12 +423,21 @@ public class TileEntityITER extends TileEntityMachineBase implements ITickable, 
 	
 	@Override
 	public boolean canExtractItem(int slot, ItemStack itemStack, int amount) {
-		return true;
+		return slot != 1;
 	}
 	
 	@Override
 	public int[] getAccessibleSlotsFromSide(EnumFacing e) {
-		return new int[] { 2, 4 };
+		return new int[] { 1, 2, 4 };
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int i, ItemStack itemStack) {
+		
+		if(i == 1 && RBMKOutgasserRecipes.getRequiredFlux(itemStack) != -1)
+			return true;
+		
+		return false;
 	}
 
 	AxisAlignedBB bb = null;

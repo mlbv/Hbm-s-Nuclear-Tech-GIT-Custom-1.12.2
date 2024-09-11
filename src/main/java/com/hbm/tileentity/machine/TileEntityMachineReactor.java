@@ -23,6 +23,7 @@ public class TileEntityMachineReactor extends TileEntityMachineBase implements I
 	public static final int maxPower = 1000;
 	public static final int processingSpeed = 1000;
 
+	// 0 = fuel, 1 = input, 2 = output
 	private static final int[] slots_top = new int[] { 1 };
 	private static final int[] slots_bottom = new int[] { 2, 0 };
 	private static final int[] slots_side = new int[] { 0 };
@@ -124,7 +125,7 @@ public class TileEntityMachineReactor extends TileEntityMachineBase implements I
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack stack) {
-		return i == 2 ? false : (i == 0 ? hasItemPower(stack) : true);
+		return i == 2 ? false : (i == 0 ? (this.heat == 0 && hasItemPower(stack)) : true);
 	}
 
 	public int getProgressScaled(int i) {

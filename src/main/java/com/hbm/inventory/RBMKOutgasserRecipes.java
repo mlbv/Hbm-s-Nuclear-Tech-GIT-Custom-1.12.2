@@ -28,7 +28,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class RBMKOutgasserRecipes {
 
-	public static LinkedHashMap<ComparableStack, Object[]> rbmkOutgasserRecipes = new LinkedHashMap<ComparableStack, Object[]>();
+	public static LinkedHashMap<Object, Object[]> rbmkOutgasserRecipes = new LinkedHashMap<Object, Object[]>();
 	public static List<RBMKOutgasserRecipe> jeiRBMKOutgasserRecipes = null;
 	
 	public static void registerOverrides() {
@@ -155,7 +155,7 @@ public class RBMKOutgasserRecipes {
 
 	public static void addRecipe(int requiredFlux, String in, ItemStack out) {
 		if(!OreDictionary.getOres(in).isEmpty() && OreDictionary.getOres(in).get(0) != null && !OreDictionary.getOres(in).get(0).isEmpty())
-			rbmkOutgasserRecipes.put(new ComparableStack(OreDictionary.getOres(in).get(0)), new Object[] {requiredFlux, out});
+			rbmkOutgasserRecipes.put(in, new Object[] {requiredFlux, out}); // 直接存储矿辞名
 	}
 
 	public static void addRecipe(float requiredFlux, String in, ItemStack out) {
@@ -175,39 +175,36 @@ public class RBMKOutgasserRecipes {
 	}
 
 	public static int getRequiredFlux(ItemStack stack) {
-		
 		if(stack == null || stack.isEmpty())
 			return -1;
 		
 		ComparableStack comp = new ComparableStack(stack).makeSingular();
+		// 检查 ComparableStack 键
 		if(rbmkOutgasserRecipes.containsKey(comp)){
 			return (int)rbmkOutgasserRecipes.get(comp)[0];
 		}
-
+	
+		// 检查矿辞名称键
 		String[] dictKeys = comp.getDictKeys();
-		
 		for(String key : dictKeys) {
 			if(rbmkOutgasserRecipes.containsKey(key)){
-				return (int)rbmkOutgasserRecipes.get(key)[1];
+				return (int)rbmkOutgasserRecipes.get(key)[0];
 			}
 		}
 		return -1;
 	}
 
 	public static ItemStack getOutput(ItemStack stack) {
-		
 		if(stack == null || stack.getItem() == null)
 			return null;
-
 		ComparableStack comp = new ComparableStack(stack).makeSingular();
+		// 检查 ComparableStack 键
 		if(rbmkOutgasserRecipes.containsKey(comp)){
 			return (ItemStack)rbmkOutgasserRecipes.get(comp)[1];
 		}
-		
+		// 检查矿辞名称键
 		String[] dictKeys = comp.getDictKeys();
-		
 		for(String key : dictKeys) {
-			
 			if(rbmkOutgasserRecipes.containsKey(key)){
 				return (ItemStack)rbmkOutgasserRecipes.get(key)[1];
 			}
@@ -216,40 +213,60 @@ public class RBMKOutgasserRecipes {
 	}
 
 	public static List<RBMKOutgasserRecipe> getRBMKOutgasserRecipes() {
-		if(jeiRBMKOutgasserRecipes == null){
-			jeiRBMKOutgasserRecipes = new ArrayList<RBMKOutgasserRecipe>();
-			for(Entry<ComparableStack, Object[]> e : rbmkOutgasserRecipes.entrySet()){
-				jeiRBMKOutgasserRecipes.add(new RBMKOutgasserRecipe(e.getKey().toStack(), (int)e.getValue()[0], (ItemStack)e.getValue()[1]));
+		if (jeiRBMKOutgasserRecipes == null) {
+			jeiRBMKOutgasserRecipes = new ArrayList<>();
+			
+			for (Entry<Object, Object[]> e : rbmkOutgasserRecipes.entrySet()) {
+				Object key = e.getKey();
+				List<ItemStack> inputs = new ArrayList<>();
+				ItemStack output = (ItemStack) e.getValue()[1];
+				int requiredFlux = (int) e.getValue()[0];
+	
+				// 处理矿辞名
+				if (key instanceof String) {
+					List<ItemStack> ores = OreDictionary.getOres((String) key);
+					if (!ores.isEmpty()) {
+						inputs.addAll(ores); // 添加所有匹配的矿辞物品
+					}
+				} 
+				// 处理 ComparableStack
+				else if (key instanceof ComparableStack) {
+					inputs.add(((ComparableStack) key).toStack());
+				}
+	
+				if (!inputs.isEmpty()) {
+					jeiRBMKOutgasserRecipes.add(new RBMKOutgasserRecipe(inputs, requiredFlux, output));
+				}
 			}
 		}
 		return jeiRBMKOutgasserRecipes;
 	}
 	
 	public static class RBMKOutgasserRecipe implements IRecipeWrapper {
-		
-		private final ItemStack input;
+    
+		private final List<ItemStack> inputs;
 		private final int requiredFlux;
 		private final ItemStack output;
 		
-		public RBMKOutgasserRecipe(ItemStack input, int requiredFlux, ItemStack output) {
-			this.input = input;
+		public RBMKOutgasserRecipe(List<ItemStack> inputs, int requiredFlux, ItemStack output) {
+			this.inputs = inputs;
 			this.requiredFlux = requiredFlux;
 			this.output = output;
 		}
 		
 		@Override
 		public void getIngredients(IIngredients ingredients) {
-			ingredients.setInput(VanillaTypes.ITEM, input);
+			ingredients.setInputs(VanillaTypes.ITEM, inputs); // 接受多个输入物品
 			ingredients.setOutput(VanillaTypes.ITEM, output);
 		}
-
+	
 		@Override
 		public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 			FontRenderer fontRenderer = minecraft.fontRenderer;
-	    	
-	    	fontRenderer.drawString("Flux", 21-12, 33-17, 4210752);
-	    	fontRenderer.drawString(""+requiredFlux, 123-12-fontRenderer.getStringWidth(""+requiredFlux), 34-17, 0x46EA00);
-	    	GlStateManager.color(1, 1, 1, 1);
+			
+			fontRenderer.drawString("Flux", 21-12, 33-17, 4210752);
+			fontRenderer.drawString("" + requiredFlux, 123-12-fontRenderer.getStringWidth("" + requiredFlux), 34-17, 0x46EA00);
+			GlStateManager.color(1, 1, 1, 1);
 		}
 	}
 }
