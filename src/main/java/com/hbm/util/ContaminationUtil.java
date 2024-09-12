@@ -2,57 +2,52 @@ package com.hbm.util;
 
 import java.util.List;
 
-import com.hbm.capability.HbmLivingCapability.EntityHbmProps;
+import com.hbm.blocks.items.ItemBlockHazard;
 import com.hbm.capability.HbmLivingCapability;
+import com.hbm.capability.HbmLivingCapability.EntityHbmProps;
 import com.hbm.capability.HbmLivingProps;
 import com.hbm.config.CompatibilityConfig;
 import com.hbm.config.GeneralConfig;
-import com.hbm.entity.mob.EntityNuclearCreeper;
+import com.hbm.entity.effect.EntityNukeTorex;
+import com.hbm.entity.grenade.EntityGrenadeASchrab;
+import com.hbm.entity.grenade.EntityGrenadeNuclear;
+import com.hbm.entity.logic.EntityNukeExplosionMK5;
+import com.hbm.entity.missile.EntityMIRV;
 import com.hbm.entity.mob.EntityQuackos;
 import com.hbm.entity.projectile.EntityBulletBase;
 import com.hbm.entity.projectile.EntityExplosiveBeam;
 import com.hbm.entity.projectile.EntityMiniMIRV;
 import com.hbm.entity.projectile.EntityMiniNuke;
-import com.hbm.entity.effect.EntityNukeTorex;
-import com.hbm.entity.effect.EntityBlackHole;
-import com.hbm.entity.logic.EntityNukeExplosionMK5;
-import com.hbm.entity.grenade.EntityGrenadeASchrab;
-import com.hbm.entity.grenade.EntityGrenadeNuclear;
-import com.hbm.entity.missile.EntityMIRV;
 import com.hbm.handler.ArmorUtil;
 import com.hbm.handler.HazmatRegistry;
-import com.hbm.interfaces.IRadiationImmune;
 import com.hbm.interfaces.IItemHazard;
+import com.hbm.interfaces.IRadiationImmune;
 import com.hbm.items.ModItems;
-import com.hbm.blocks.items.ItemBlockHazard;
 import com.hbm.lib.Library;
 import com.hbm.lib.ModDamageSource;
-import com.hbm.render.amlfrom1710.Vec3;
-import com.hbm.util.ArmorRegistry.HazardClass;
-import com.hbm.util.BobMathUtil;
 import com.hbm.potion.HbmPotion;
+import com.hbm.render.amlfrom1710.Vec3;
 import com.hbm.saveddata.RadiationSavedData;
+import com.hbm.util.ArmorRegistry.HazardClass;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityMooshroom;
 import net.minecraft.entity.passive.EntityOcelot;
-import net.minecraft.entity.passive.EntityZombieHorse;
 import net.minecraft.entity.passive.EntitySkeletonHorse;
-import net.minecraft.entity.passive.EntityOcelot;
+import net.minecraft.entity.passive.EntityZombieHorse;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.Style;
@@ -66,9 +61,9 @@ public class ContaminationUtil {
 	public static final String NTM_NEUTRON_NBT_KEY = "ntmNeutron";
 
 	/**
-	 * Calculates how much radiation can be applied to this entity by calculating resistance
-	 * @param entity
-	 * @return
+	 * Calculates the radiation resistance modifier for an entity based on its resistance and equipment.
+	 * @param entity The entity to calculate radiation resistance for.
+	 * @return The radiation modifier, as a float value.
 	 */
 	public static float calculateRadiationMod(EntityLivingBase entity) {
 
@@ -82,6 +77,11 @@ public class ContaminationUtil {
 		return (float) Math.pow(koeff, -(getConfigEntityRadResistance(entity) + HazmatRegistry.getResistance(entity))) * mult;
 	}
 
+	/**
+	 * Applies radiation data to an entity, adjusting for radiation modifiers and capabilities.
+	 * @param e The entity to apply radiation to.
+	 * @param f The amount of radiation to apply.
+	 */
 	private static void applyRadData(Entity e, float f) {
 
 		if(e instanceof IRadiationImmune)
@@ -106,6 +106,11 @@ public class ContaminationUtil {
 		}
 	}
 
+	/**
+	 * Directly applies radiation to an entity, ignoring modifiers and resistance values.
+	 * @param entity The entity to apply radiation to.
+	 * @param f The amount of radiation to apply.
+	 */
 	private static void applyRadDirect(Entity entity, float f) {
 
 		if(entity instanceof IRadiationImmune)
@@ -129,6 +134,10 @@ public class ContaminationUtil {
 		}
 	}
 
+	/**
+	 * Prints radiation data for a player, including environmental radiation and personal radiation levels.
+	 * @param player The player to print Geiger counter data for.
+	 */
 	public static void printGeigerData(EntityPlayer player) {
 
 		double eRad = ((long)(HbmLivingProps.getRadiation(player) * 1000)) / 1000D;
@@ -175,6 +184,10 @@ public class ContaminationUtil {
 		player.sendMessage(new TextComponentTranslation("geiger.playerRes").appendSibling(new TextComponentString(" " + resPrefix + String.format("%.6f", res) + "% (" + resKoeff + ")")).setStyle(new Style().setColor(TextFormatting.YELLOW)));
 	}
 
+	/**
+	 * Prints dosimeter radiation data for a player, limiting to a maximum of 3.6 RAD/s.
+	 * @param player The player to print dosimeter data for.
+	 */
 	public static void printDosimeterData(EntityPlayer player) {
 
 		double rads = ContaminationUtil.getActualPlayerRads(player);
@@ -191,6 +204,11 @@ public class ContaminationUtil {
 		player.sendMessage(new TextComponentTranslation("geiger.recievedRad").appendSibling(new TextComponentString(" " + radsPrefix + (limit ? ">" : "") + rads + " RAD/s")).setStyle(new Style().setColor(TextFormatting.YELLOW)));
 	}
 
+	/**
+	 * Returns a text color based on the given percentage.
+	 * @param percent The percentage to evaluate.
+	 * @return A text formatting color corresponding to the percentage.
+	 */
 	public static String getTextColorFromPercent(double percent){
 		if(percent < 0.5)
 			return ""+TextFormatting.GREEN;
@@ -206,6 +224,11 @@ public class ContaminationUtil {
 			return ""+TextFormatting.DARK_GRAY;
 	}
 
+	/**
+ 	* Returns a text color based on lung health percentage.
+ 	* @param percent The percentage of lung health.
+ 	* @return A text formatting color corresponding to the lung health percentage.
+ 	*/
 	public static String getTextColorLung(double percent){
 		if(percent > 0.9)
 			return ""+TextFormatting.GREEN;
@@ -221,6 +244,10 @@ public class ContaminationUtil {
 			return ""+TextFormatting.DARK_GRAY;
 	}
 
+	/**
+ 	* Prints diagnostic data for a player related to radiation digamma.
+ 	* @param player The player to print diagnostic data for.
+ 	*/
 	public static void printDiagnosticData(EntityPlayer player) {
 
 		double digamma = ((int)(HbmLivingProps.getDigamma(player) * 1000)) / 1000D;
@@ -231,6 +258,10 @@ public class ContaminationUtil {
 		player.sendMessage(new TextComponentTranslation("digamma.playerHealth").appendSibling(new TextComponentString(getTextColorFromPercent(halflife/100D) + String.format(" %6.2f", halflife) + "%")).setStyle(new Style().setColor(TextFormatting.LIGHT_PURPLE)));
 	}
 
+	/**
+ 	* Prints diagnostic data for a player's lung health related to asbestos and black lung.
+ 	* @param player The player to print lung diagnostic data for.
+	 */
 	public static void printLungDiagnosticData(EntityPlayer player) {
 
 		float playerAsbestos = 100F-((int)(10000F * HbmLivingProps.getAsbestos(player) / EntityHbmProps.maxAsbestos))/100F;
@@ -248,6 +279,11 @@ public class ContaminationUtil {
 		}
 	}
 
+	/**
+ 	* Calculates the radiation level of an item stack based on its tags and properties.
+ 	* @param stack The item stack to calculate radiation for.
+ 	* @return The amount of radiation in the stack.
+ 	*/
 	public static double getStackRads(ItemStack stack) {
 		if(stack == null)
 			return 0;
@@ -276,22 +312,38 @@ public class ContaminationUtil {
 		else
 			return 0;
 	}
-
+	/**
+	 * Calculates the actual radiation level for a player, taking into account modifiers and equipment.
+	 * @param entity The entity to calculate radiation for.
+	 * @return The actual amount of radiation for the player.
+	 */
 	public static double getActualPlayerRads(EntityLivingBase entity) {
 		return getPlayerRads(entity) * (double)(ContaminationUtil.calculateRadiationMod(entity));
 	}
-
+	/**
+	 * Retrieves the base radiation level for a player without any modifiers.
+	 * @param entity The player to get radiation levels for.
+	 * @return The base radiation level.
+	 */
 	public static double getPlayerRads(EntityLivingBase entity) {
 		double rads = HbmLivingProps.getRadBuf(entity);
 		if(entity instanceof EntityPlayer)
 			 rads = rads + HbmLivingProps.getNeutron(entity)*20;
 		return rads;
 	}
-
+	/**
+	 * Calculates the radiation level of a player excluding neutron radiation.
+	 * @param entity The player to calculate radiation for.
+	 * @return The radiation level without neutron effects.
+	 */
 	public static double getNoNeutronPlayerRads(EntityLivingBase entity) {
 		return (double)(HbmLivingProps.getRadBuf(entity)) * (double)(ContaminationUtil.calculateRadiationMod(entity));
 	}
-
+	/**
+	 * Retrieves the amount of neutron radiation in a player's inventory.
+	 * @param player The player to calculate neutron radiation for.
+	 * @return The total neutron radiation from the player's inventory.
+	 */
 	public static float getPlayerNeutronRads(EntityPlayer player){
 		float radBuffer = 0F;
 		for(ItemStack slotI : player.inventory.mainInventory){
@@ -302,7 +354,11 @@ public class ContaminationUtil {
 		}
 		return radBuffer;
 	}
-
+	/**
+	 * Checks if an item stack is radioactive.
+	 * @param stack The item stack to check.
+	 * @return True if the item stack is radioactive, false otherwise.
+	 */
 	public static boolean isRadItem(ItemStack stack){
 		if(stack == null)
 			return false;
@@ -313,7 +369,11 @@ public class ContaminationUtil {
 
         return stack.getItem() instanceof ItemBlockHazard && ((ItemBlockHazard) stack.getItem()).getModule().radiation > 0;
     }
-
+	/**
+	 * Gets the neutron radiation from an item stack, if any.
+	 * @param stack The item stack to check for neutron radiation.
+	 * @return The neutron radiation value of the stack.
+	 */
 	public static float getNeutronRads(ItemStack stack){
 		if(stack != null && !stack.isEmpty() && !isRadItem(stack)){
 			if(stack.hasTagCompound()){
@@ -325,7 +385,12 @@ public class ContaminationUtil {
 		}
 		return 0F;
 	}
-
+	/**
+	 * Activates neutron radiation for all items in a player's inventory.
+	 * @param player The player whose inventory will be activated.
+	 * @param rad The amount of neutron radiation to apply.
+	 * @param decay The decay rate of neutron radiation.
+	 */
 	public static void neutronActivateInventory(EntityPlayer player, float rad, float decay){
 		for(int slotI = 0; slotI < player.inventory.getSizeInventory()-1; slotI++){
 			if(slotI != player.inventory.currentItem)
@@ -335,7 +400,12 @@ public class ContaminationUtil {
 			neutronActivateItem(slotA, rad, decay);
 		}
 	}
-
+	/**
+	 * Activates neutron radiation for a single item stack.
+	 * @param stack The item stack to activate.
+	 * @param rad The amount of neutron radiation to apply.
+	 * @param decay The decay rate of neutron radiation.
+	 */
 	public static void neutronActivateItem(ItemStack stack, float rad, float decay){
 		if(stack != null && !stack.isEmpty() && !isRadItem(stack)){
 			if(stack.getCount() > 1)
@@ -368,13 +438,21 @@ public class ContaminationUtil {
 			}
 		}
 	}
-
+	/**
+	 * Checks if an item stack is contaminated with neutron radiation.
+	 * @param stack The item stack to check.
+	 * @return True if the item stack is contaminated, false otherwise.
+	 */
 	public static boolean isContaminated(ItemStack stack){
 		if(!stack.hasTagCompound())
 			return false;
         return stack.getTagCompound().hasKey(NTM_NEUTRON_NBT_KEY);
     }
-	
+	/**
+	 * Gets a text formatting prefix based on radiation levels.
+	 * @param rads The radiation level to evaluate.
+	 * @return A text formatting prefix corresponding to the radiation level.
+	 */
 	public static String getPreffixFromRad(double rads) {
 
 		String chunkPrefix = "";
@@ -394,7 +472,11 @@ public class ContaminationUtil {
 		
 		return chunkPrefix;
 	}
-	
+	/**
+	 * Retrieves the radiation level of an entity.
+	 * @param e The entity to check radiation for.
+	 * @return The amount of radiation.
+	 */
 	public static float getRads(Entity e) {
 		if(e instanceof IRadiationImmune)
 			return 0.0F;
@@ -402,7 +484,11 @@ public class ContaminationUtil {
 			return HbmLivingProps.getRadiation((EntityLivingBase)e);
 		return 0.0F;
 	}
-
+	/**
+	 * Gets the radiation resistance from the configuration for a given entity.
+	 * @param e The entity to get resistance for.
+	 * @return The total radiation resistance value.
+	 */
 	public static float getConfigEntityRadResistance(Entity e){
 		float totalResistanceValue = 0.0F;
 		if(!(e instanceof EntityPlayer)){
@@ -418,7 +504,11 @@ public class ContaminationUtil {
 		}
 		return totalResistanceValue;
 	}
-
+	/**
+	 * Checks if an entity is immune to radiation based on configuration settings.
+	 * @param e The entity to check for immunity.
+	 * @return True if the entity is immune, false otherwise.
+	 */
 	public static boolean checkConfigEntityImmunity(Entity e){
 		if(!(e instanceof EntityPlayer)){
 			ResourceLocation entity_path = EntityList.getKey(e);
@@ -432,7 +522,11 @@ public class ContaminationUtil {
 		}
 		return false;
 	}
-	
+	/**
+	 * Checks if an entity is immune to radiation effects.
+	 * @param e The entity to check for radiation immunity.
+	 * @return True if the entity is immune, false otherwise.
+	 */
 	public static boolean isRadImmune(Entity e) {
 		if(e instanceof EntityLivingBase && ((EntityLivingBase)e).isPotionActive(HbmPotion.mutation))
 			return true;
@@ -453,7 +547,13 @@ public class ContaminationUtil {
 	public static void applyAsbestos(Entity e, int i, int dmg) {
 		applyAsbestos(e, i, dmg, 1);
 	}
-
+	/**
+	 * Applies asbestos contamination to an entity.
+	 * @param e The entity to contaminate.
+	 * @param i The amount of contamination to apply.
+	 * @param dmg The amount of damage to apply.
+	 * @param chance The chance for the contamination to apply.
+	 */
 	public static void applyAsbestos(Entity e, int i, int dmg, int chance) {
 
 		if(!GeneralConfig.enableAsbestos)
@@ -490,6 +590,14 @@ public class ContaminationUtil {
 	}
 
 	/// COAL ///
+
+	/**
+	 * Applies coal contamination to an entity.
+	 * @param e The entity to contaminate.
+	 * @param i The amount of contamination to apply.
+	 * @param dmg The amount of damage to apply.
+	 * @param chance The chance for the contamination to apply.
+	 */
 	public static void applyCoal(Entity e, int i, int dmg, int chance) {
 
 		if(!GeneralConfig.enableCoal)
@@ -522,6 +630,11 @@ public class ContaminationUtil {
 	}
 		
 	/// DIGAMMA ///
+	/**
+	 * Applies digamma radiation to an entity, affecting its health and stability.
+	 * @param e The entity to apply digamma radiation to.
+	 * @param f The amount of digamma radiation to apply.
+	 */
 	public static void applyDigammaData(Entity e, float f) {
 
 		if(!(e instanceof EntityLivingBase))
@@ -544,7 +657,11 @@ public class ContaminationUtil {
 		if(!(entity instanceof EntityPlayer && ArmorUtil.checkForDigamma((EntityPlayer) entity)))
 			HbmLivingProps.incrementDigamma(entity, f);
 	}
-		
+	/**
+	 * Directly applies digamma radiation to an entity without modifiers.
+	 * @param e The entity to apply digamma radiation to.
+	 * @param f The amount of digamma radiation to apply.
+	 */
 	public static void applyDigammaDirect(Entity e, float f) {
 
 		if(!(e instanceof EntityLivingBase))
@@ -559,7 +676,11 @@ public class ContaminationUtil {
 		EntityLivingBase entity = (EntityLivingBase)e;
 		HbmLivingProps.incrementDigamma(entity, f);
 	}
-		
+	/**
+	 * Retrieves the digamma radiation level of an entity.
+	 * @param e The entity to check for digamma radiation.
+	 * @return The amount of digamma radiation.
+	 */
 	public static float getDigamma(Entity e) {
 
 		if(!(e instanceof EntityLivingBase))
@@ -581,6 +702,19 @@ public class ContaminationUtil {
 		radiate(world, x, y, z, range, rad3d, dig3d, fire3d, blast3d, range);
 	}
 
+	/**
+	 * Applies radiation, digamma, fire, and blast effects to entities within a specified range.
+	 * @param world The world where the radiation is applied.
+	 * @param x The x-coordinate of the radiation source.
+	 * @param y The y-coordinate of the radiation source.
+	 * @param z The z-coordinate of the radiation source.
+	 * @param range The range of the radiation.
+	 * @param rad3d The amount of radiation to apply.
+	 * @param dig3d The amount of digamma radiation to apply.
+	 * @param fire3d The amount of fire damage to apply.
+	 * @param blast3d The amount of blast damage to apply.
+	 * @param blastRange The range of the blast effect.
+	 */
 	public static void radiate(World world, double x, double y, double z, double range, float rad3d, float dig3d, float fire3d, float blast3d, double blastRange) {
 		List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(x-range, y-range, z-range, x+range, y+range, z+range));
 		
@@ -656,6 +790,11 @@ public class ContaminationUtil {
 		}
 	}
 
+	/**
+	 * Checks if an entity is exempt from explosion effects.
+	 * @param e The entity to check.
+	 * @return True if the entity is exempt from explosions, false otherwise.
+	 */
 	private static boolean isExplosionExempt(Entity e) {
 
 		if (e instanceof EntityOcelot ||
@@ -700,6 +839,14 @@ public class ContaminationUtil {
 	
 	/*
 	 * This system is nice but the cont types are a bit confusing. Cont types should have much better names and multiple cont types should be applicable.
+	 */
+	/**
+	 * Contaminates an entity with a specified hazard and contamination type.
+	 * @param entity The entity to contaminate.
+	 * @param hazard The type of hazard to apply (e.g., radiation, digamma).
+	 * @param cont The contamination type to apply (e.g., hazmat, creative).
+	 * @param amount The amount of contamination to apply.
+	 * @return True if the entity was successfully contaminated, false otherwise.
 	 */
 	@SuppressWarnings("incomplete-switch") //just shut up
 	public static boolean contaminate(EntityLivingBase entity, HazardType hazard, ContaminationType cont, float amount) {

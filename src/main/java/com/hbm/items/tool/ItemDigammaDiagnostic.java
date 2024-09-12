@@ -44,7 +44,7 @@ public class ItemDigammaDiagnostic extends Item implements IBauble {
 
 	public static void playVoices(World world, EntityPlayer player){
 		double x = HbmLivingProps.getDigamma(player);
-		
+		if (x <= 0.01) return;
 		if(world.getTotalWorldTime() % 10 == 0 && world.rand.nextInt((int)(20/x)) == 0) {
 
 			if(x > 0.01) {
