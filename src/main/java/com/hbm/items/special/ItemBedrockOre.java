@@ -1,34 +1,37 @@
 package com.hbm.items.special;
 
-import java.util.Map;
 import java.util.List;
 
-import com.hbm.inventory.BedrockOreRegistry;
-import com.hbm.main.MainRegistry;
-import com.hbm.items.ModItems;
-import com.hbm.lib.RefStrings;
-import com.hbm.util.I18nUtil;
 import com.hbm.blocks.generic.BlockBedrockOreTE.TileEntityBedrockOre;
+import com.hbm.inventory.BedrockOreRegistry;
+import com.hbm.items.ModItems;
+import com.hbm.main.MainRegistry;
+import com.hbm.util.I18nUtil;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenMethod;
 
+@ZenRegister
+@ZenClass("mods.ntm.ItemBedrockOre")
 public class ItemBedrockOre extends Item {
 
 	public ItemBedrockOre(String s) {
@@ -55,6 +58,11 @@ public class ItemBedrockOre extends Item {
 		return out;
 	}
 
+	@ZenMethod
+	public static IItemStack getOutasIItemStack(int oreMeta, int amount) {
+		return CraftTweakerMC.getIItemStack(getOut(oreMeta, amount));
+	}
+
 	public static String getOreTag(ItemStack stack){
 		return BedrockOreRegistry.oreIndexes.get(stack.getMetadata());
 	}
@@ -69,6 +77,7 @@ public class ItemBedrockOre extends Item {
 		return BedrockOreRegistry.getOreColor(getOreTag(stack));
 	}
 
+	@ZenMethod
 	public static int getOutType(int oreMeta){
 		String oreResult = BedrockOreRegistry.oreResults.get(BedrockOreRegistry.oreIndexes.get(oreMeta));
 		if(oreResult.startsWith("gem")) return 0;

@@ -1,30 +1,34 @@
 package com.hbm.inventory;
 
-import java.util.Random;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
+import com.hbm.config.BedrockOreJsonConfig;
+import com.hbm.config.CompatibilityConfig;
 import com.hbm.forgefluid.ModForgeFluids;
 import com.hbm.interfaces.Spaghetti;
 import com.hbm.lib.Library;
-import com.hbm.config.BedrockOreJsonConfig;
-import com.hbm.config.CompatibilityConfig;
 import com.hbm.util.WeightedRandomObject;
 
-import net.minecraft.init.Items;
-import net.minecraft.init.Blocks;
+import crafttweaker.annotations.ZenRegister;
 import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.WeightedRandom;
-import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenMethod;
 
 //TODO: clean this shit up
 @Spaghetti("everything")
+@ZenRegister
+@ZenClass("mods.ntm.BedrockOreRegistry")
 public class BedrockOreRegistry {
 
 	public static HashMap<Integer, String> oreIndexes = new HashMap();
@@ -179,7 +183,7 @@ public class BedrockOreRegistry {
 	}
 
 	public static String getOreName(String oreName){
-		return oreName.substring(3).replaceAll("([A-Z])", " $1").trim();
+		return oreName != null && oreName != "" ? oreName.substring(3).replaceAll("([A-Z])", " $1").trim() : "Unknown"; //Zenscript compatibility
 	}
 
 	public static void registerOreColors(){
@@ -221,5 +225,17 @@ public class BedrockOreRegistry {
 		Integer x = oreColors.get(ore);
 		if(x == null) return 0xFFFFFF;
 		return x;
+	}
+
+	@ZenMethod
+	public static int[] getOreIndexesKeySet() {
+		Set<Integer> keySet = oreIndexes.keySet();
+		// 将 Set 转换为 int 数组
+		int[] keysArray = new int[keySet.size()];
+		int i = 0;
+		for (Integer key : keySet) {
+			keysArray[i++] = key;
+		}
+		return keysArray;
 	}
 }
