@@ -1,11 +1,12 @@
 package com.hbm.explosion;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -29,7 +30,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class ExplosionNukeRayBatched {
 
-	public HashMap<ChunkPos, BitSet> perChunk = new HashMap<ChunkPos, BitSet>();
+	public HashMap<ChunkPos, CompressedBlockSet> perChunk = new HashMap<ChunkPos, CompressedBlockSet>();
 	public List<ChunkPos> orderedChunks = new ArrayList();
 	private CoordComparator comparator = new CoordComparator();
 	public boolean isContained = true;
@@ -82,128 +83,99 @@ public class ExplosionNukeRayBatched {
 		precomputedGspCoordinates = precomputeGspCoordinatesAsync();
 	}
 
-	private void generateGspUp(){
-		if (this.gspNum < this.gspNumMax) {
-			int k = this.gspNum + 1;
-			double hk = -1.0 + 2.0 * (k - 1.0) / (this.gspNumMax - 1.0);
-			this.gspX = Math.acos(hk);
 
-			double prev_lon = this.gspY;
-			double lon = prev_lon + 3.6 / Math.sqrt(this.gspNumMax) / Math.sqrt(1.0 - hk * hk);
-			this.gspY = lon % (Math.PI * 2);
-		} else {
-			this.gspX = 0.0;
-			this.gspY = 0.0;
+	public void addPos(int x, int y, int z) {
+		ChunkPos chunk = new ChunkPos(x >> 4, z >> 4);
+		CompressedBlockSet hitPositions = (CompressedBlockSet) perChunk.get(chunk);
+	
+		if (hitPositions == null) {
+			hitPositions = new CompressedBlockSet();
+			perChunk.put(chunk, hitPositions);
 		}
-		this.gspNum++;
-	}
-
-	// Get Cartesian coordinates for spherical coordinates
-	// 90 X-Axis rotation for more efficient chunk scanning
-	private Vec3 getSpherical2cartesian(){
-		double dx = Math.sin(this.gspX) * Math.cos(this.gspY);
-		double dy = Math.sin(this.gspX) * Math.sin(this.gspY);
-		double dz = Math.cos(this.gspX);
-		return Vec3.createVectorHelper(dx, dy, dz);
-	}
-
-	public void addPos(int x, int y, int z){
-		chunk = new ChunkPos(x >> 4, z >> 4);
-		BitSet hitPositions = perChunk.get(chunk);
-				
-		if(hitPositions == null) {
-			hitPositions = new BitSet(65536);
-			perChunk.put(chunk, hitPositions); //we re-use the same pos instead of using individualized per-chunk ones to save on RAM
-		}
-		hitPositions.set(((255-y) << 8) + ((x - chunk.getXStart()) << 4) + (z - chunk.getZStart()));
+	
+		int index = ((255 - y) << 8) + ((x & 15) << 4) + (z & 15);
+		hitPositions.add(index);
 	}
 
 	int age = 0;
 	public void collectTip(int time) {
-        if (!CompatibilityConfig.isWarDim(world)) {
-            isAusf3Complete = true;
-            return;
-        }
-        MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        long raysProcessed = 0;
-        long start = System.currentTimeMillis();
-
-        IBlockState blockState;
-        Block b;
-        int iX, iY, iZ, radius;
-        float rayStrength;
-        Vec3 vec;
-        age++;
-        if (age == 120) {
-            System.out.println("NTM C " + raysProcessed + " " + Math.round(10000D * 100D * gspNum / (double) gspNumMax) / 10000D + "% " + gspNum + "/" + gspNumMax);
-            age = 0;
-        }
-        
-        try {
-            // 如果还没完成，等待异步计算完成
-            if (!precomputedGspCoordinates.isDone()) {
-                return;
-            }
-            
-            // 获取预先计算好的Gsp坐标
-            if (gspCoordinates == null) {
-                gspCoordinates = precomputedGspCoordinates.get();
-            }
-
-            while (this.gspNumMax >= this.gspNum) {
-                // 使用预生成的Gsp坐标
-                vec = gspCoordinates.get(gspNum - 1);
-                radius = (int) Math.ceil(this.radius);
-                rayStrength = strength * 0.3F;
-
-                // Finding the end of the ray
-                for (int r = 0; r < radius + 1; r++) {
-                    iY = (int) Math.floor(posY + (vec.yCoord * r));
-
-                    if (iY < minY || iY > maxY) {
-                        isContained = false;
-                        break;
-                    }
-
-                    iX = (int) Math.floor(posX + (vec.xCoord * r));
-                    iZ = (int) Math.floor(posZ + (vec.zCoord * r));
-
-                    pos.setPos(iX, iY, iZ);
-                    blockState = world.getBlockState(pos);
-                    b = blockState.getBlock();
-                    if (b.getExplosionResistance(null) >= 2_000_000)
-                        break;
-
-                    rayStrength -= Math.pow(getNukeResistance(blockState, b) + 1, 3 * ((double) r) / ((double) radius)) - 1;
-
-                    // Save block positions in to-destroy-boolean[] until rayStrength is 0
-                    if (rayStrength > 0) {
-                        if (b != Blocks.AIR) {
-                            addPos(iX, iY, iZ);
-                        }
-                        if (r >= radius) {
-                            isContained = false;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-
-                raysProcessed++;
-                if (raysProcessed % rayCheckInterval == 0 && System.currentTimeMillis() + 1 > start + time) {
-                    return;
-                }
-                this.gspNum++;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        orderedChunks.addAll(perChunk.keySet());
-        orderedChunks.sort(comparator);
-
-        isAusf3Complete = true;
-    }
+		if (!CompatibilityConfig.isWarDim(world)) {
+			isAusf3Complete = true;
+			return;
+		}
+	
+		long start = System.currentTimeMillis();
+		long raysProcessed = 0;
+		try {
+			// 如果异步计算还未完成，返回等待
+			if (!precomputedGspCoordinates.isDone()) {
+				return;
+			}
+	
+			if (gspCoordinates == null) {
+				gspCoordinates = precomputedGspCoordinates.get();
+			}
+	
+			while (this.gspNumMax >= this.gspNum) {
+				// 获取预生成的Gsp坐标
+				Vec3 vec = gspCoordinates.get(gspNum - 1);
+	
+				int x0 = posX;
+				int y0 = posY;
+				int z0 = posZ;
+				int x1 = posX + (int) (vec.xCoord * radius);
+				int y1 = posY + (int) (vec.yCoord * radius);
+				int z1 = posZ + (int) (vec.zCoord * radius);
+	
+				// 使用 Bresenham 的线算法来处理射线追踪
+				List<BlockPos> rayBlocks = getLineBlocks(x0, y0, z0, x1, y1, z1);
+				float rayStrength = strength * 0.3F;
+	
+				for (BlockPos pos : rayBlocks) {
+					int iX = pos.getX();
+					int iY = pos.getY();
+					int iZ = pos.getZ();
+	
+					if (iY < minY || iY > maxY) {
+						isContained = false;
+						break;
+					}
+	
+					IBlockState blockState = world.getBlockState(pos);
+					Block block = blockState.getBlock();
+					if (block.getExplosionResistance(null) >= 2_000_000) {
+						break;
+					}
+	
+					rayStrength -= Math.pow(getNukeResistance(blockState, block) + 1, 3 * pos.distanceSq(posX, posY, posZ) / (radius * radius)) - 1;
+	
+					if (rayStrength > 0) {
+						if (block != Blocks.AIR) {
+							addPos(iX, iY, iZ); // 将方块位置保存到 `CompressedBlockSet`
+						}
+						if (pos.distanceSq(posX, posY, posZ) >= radius * radius) {
+							isContained = false;
+						}
+					} else {
+						break;
+					}
+				}
+	
+				raysProcessed++;
+				if (raysProcessed % rayCheckInterval == 0 && System.currentTimeMillis() > start + time) {
+					return; // 超过指定时间，等待下一次调用继续处理
+				}
+				this.gspNum++;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+		orderedChunks.addAll(perChunk.keySet());
+		orderedChunks.sort(comparator);
+	
+		isAusf3Complete = true;
+	}
 	
 	public static float getNukeResistance(IBlockState blockState, Block b) {
 		if(blockState.getMaterial().isLiquid()){
@@ -238,44 +210,45 @@ public class ExplosionNukeRayBatched {
 		}
 	}
 
-	BitSet hitArray;
+	CompressedBlockSet hitArray;
 	ChunkPos chunk;
 	boolean needsNewHitArray = true;
-	int index = 0;
-
-	public void processChunkBlocks(long start, int time){
-		if(!CompatibilityConfig.isWarDim(world)){
+	Iterator<Integer> indexIterator;
+	
+	public void processChunkBlocks(long start, int time) {
+		if (!CompatibilityConfig.isWarDim(world)) {
 			this.perChunk.clear();
 		}
-		if(this.perChunk.isEmpty()) return;
-		if(needsNewHitArray){
+		if (this.perChunk.isEmpty()) return;
+		if (needsNewHitArray) {
 			chunk = orderedChunks.get(0);
 			hitArray = perChunk.get(chunk);
-			index = hitArray.nextSetBit(0);
+			indexIterator = hitArray.getIndices().iterator();
 			needsNewHitArray = false;
 		}
-		
+	
 		int chunkX = chunk.getXStart();
 		int chunkZ = chunk.getZStart();
-		
+	
 		MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		int blocksRemoved = 0;
-		while(index > -1) {
+		while (indexIterator.hasNext()) {
+			int index = indexIterator.next();
 			pos.setPos(((index >> 4) % 16) + chunkX, 255 - (index >> 8), (index % 16) + chunkZ);
 			world.setBlockToAir(pos);
-			index = hitArray.nextSetBit(index+1);
 			blocksRemoved++;
-			if(blocksRemoved % 256 == 0 && System.currentTimeMillis()+1 > start + time){
+			if (blocksRemoved % 256 == 0 && System.currentTimeMillis() > start + time) {
 				break;
 			}
 		}
-
-		if(index < 0){
+	
+		if (!indexIterator.hasNext()) {
 			perChunk.remove(chunk);
 			orderedChunks.remove(0);
 			needsNewHitArray = true;
 		}
 	}
+	
 	
     public void vaporizeFluids(int radius, int time) {
         if (isVaporizationComplete) {
@@ -356,12 +329,20 @@ public class ExplosionNukeRayBatched {
 			isContained = nbt.getBoolean("isContained");
 
 			int i = 0;
-			while(nbt.hasKey("chunks"+i)){
-				NBTTagCompound c = (NBTTagCompound)nbt.getTag("chunks"+i);
-
-				perChunk.put(new ChunkPos(c.getInteger("cX"), c.getInteger("cZ")), BitSet.valueOf(getLongArray((NBTTagLongArray)c.getTag("cB"))));
+			while (nbt.hasKey("chunks" + i)) {
+				NBTTagCompound c = (NBTTagCompound) nbt.getTag("chunks" + i);
+				ChunkPos chunkPos = new ChunkPos(c.getInteger("cX"), c.getInteger("cZ"));
+				CompressedBlockSet blockSet = new CompressedBlockSet();
+				
+				long[] longArray = getLongArray((NBTTagLongArray) c.getTag("cB"));
+				for (long value : longArray) {
+					// 将long数组转换回相应的blockSet (假设long存储索引)
+					int index = (int) value;  // 这里需要根据你具体的long到index的转换逻辑
+					blockSet.add(index);
+				}
+				perChunk.put(chunkPos, blockSet);
 				i++;
-			}
+			}			
 			if(isAusf3Complete){
 				orderedChunks.addAll(perChunk.keySet());
 				orderedChunks.sort(comparator);
@@ -382,12 +363,21 @@ public class ExplosionNukeRayBatched {
 			nbt.setBoolean("isContained", isContained);
 		
 			int i = 0;
-			for(Entry<ChunkPos, BitSet> e : perChunk.entrySet()){
+			for (Entry<ChunkPos, CompressedBlockSet> e : perChunk.entrySet()) {
 				NBTTagCompound c = new NBTTagCompound();
 				c.setInteger("cX", e.getKey().x);
 				c.setInteger("cZ", e.getKey().z);
-				c.setTag("cB", new NBTTagLongArray(e.getValue().toLongArray()));
-				nbt.setTag("chunks"+i, c.copy());
+				
+				List<Integer> indices = new ArrayList<>();
+				for (int index : e.getValue().getIndices()) {
+					indices.add(index);  // 将压缩的blockSet转换为index列表
+				}
+				long[] longArray = new long[indices.size()];
+				for (int j = 0; j < indices.size(); j++) {
+					longArray[j] = indices.get(j);  // 这里转换为long值存储，具体实现取决于你对index的逻辑
+				}
+				c.setTag("cB", new NBTTagLongArray(longArray));
+				nbt.setTag("chunks" + i, c.copy());
 				i++;
 			}
 		}
@@ -439,5 +429,99 @@ public class ExplosionNukeRayBatched {
 		}
 		return Pair.of(Vec3.createVectorHelper(dx, dy, dz), gspY);
 	}
+	public class CompressedBlockSet {
+		private TreeMap<Integer, Integer> ranges = new TreeMap<>();
+
+		public void add(int index) {
+			Integer lowerKey = ranges.floorKey(index);
+			if (lowerKey != null && ranges.get(lowerKey) >= index - 1) {
+				ranges.put(lowerKey, Math.max(ranges.get(lowerKey), index));
+			} else {
+				ranges.put(index, index);
+			}
+		}
+
+		public Iterable<Integer> getIndices() {
+			List<Integer> indices = new ArrayList<>();
+			for (Entry<Integer, Integer> entry : ranges.entrySet()) {
+				for (int i = entry.getKey(); i <= entry.getValue(); i++) {
+					indices.add(i);
+				}
+			}
+			return indices;
+		}
+	}
+
+	private List<BlockPos> getLineBlocks(int x0, int y0, int z0, int x1, int y1, int z1) {
+		List<BlockPos> result = new ArrayList<>();
 	
+		int dx = Math.abs(x1 - x0);
+		int dy = Math.abs(y1 - y0);
+		int dz = Math.abs(z1 - z0);
+	
+		int xs = x0 < x1 ? 1 : -1;
+		int ys = y0 < y1 ? 1 : -1;
+		int zs = z0 < z1 ? 1 : -1;
+	
+		if (dx >= dy && dx >= dz) {
+			int p1 = 2 * dy - dx;
+			int p2 = 2 * dz - dx;
+	
+			while (x0 != x1) {
+				x0 += xs;
+				if (p1 >= 0) {
+					y0 += ys;
+					p1 -= 2 * dx;
+				}
+				if (p2 >= 0) {
+					z0 += zs;
+					p2 -= 2 * dx;
+				}
+				p1 += 2 * dy;
+				p2 += 2 * dz;
+	
+				result.add(new BlockPos(x0, y0, z0));
+			}
+		} else if (dy >= dx && dy >= dz) {
+			int p1 = 2 * dx - dy;
+			int p2 = 2 * dz - dy;
+	
+			while (y0 != y1) {
+				y0 += ys;
+				if (p1 >= 0) {
+					x0 += xs;
+					p1 -= 2 * dy;
+				}
+				if (p2 >= 0) {
+					z0 += zs;
+					p2 -= 2 * dy;
+				}
+				p1 += 2 * dx;
+				p2 += 2 * dz;
+	
+				result.add(new BlockPos(x0, y0, z0));
+			}
+		} else {
+			int p1 = 2 * dy - dz;
+			int p2 = 2 * dx - dz;
+	
+			while (z0 != z1) {
+				z0 += zs;
+				if (p1 >= 0) {
+					y0 += ys;
+					p1 -= 2 * dz;
+				}
+				if (p2 >= 0) {
+					x0 += xs;
+					p2 -= 2 * dz;
+				}
+				p1 += 2 * dy;
+				p2 += 2 * dx;
+	
+				result.add(new BlockPos(x0, y0, z0));
+			}
+		}
+	
+		return result;
+	}
 }
