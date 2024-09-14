@@ -24,6 +24,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -47,6 +48,9 @@ public class EntityNukeExplosionMK5 extends Entity implements IChunkLoader {
 	ExplosionNukeRayBatched explosion;
 	EntityFalloutUnderGround falloutBall;
 	EntityFalloutRain falloutRain;
+	GameRules gameRules = world.getGameRules();
+	private boolean doWaterSpreadModified = false;
+	private boolean doLavaSpreadModified = false;
 
 	private int nukeTickNumber = 0;
 
@@ -110,9 +114,15 @@ public class EntityNukeExplosionMK5 extends Entity implements IChunkLoader {
 
 		//Excecuting destruction
 		} else if(explosion.perChunk.size() > 0) {
+			if (gameRules.hasRule("doWaterSpread") && gameRules.getBoolean("doWaterSpread")){
+				gameRules.setOrCreateGameRule("doWaterSpread", "false");
+				doWaterSpreadModified = true;
+			}//nowaterspread is required for the spread control feature to work
+			if (gameRules.hasRule("doLavaSpread") && gameRules.getBoolean("doLavaSpread")){
+				gameRules.setOrCreateGameRule("doLavaSpread", "false");
+				doLavaSpreadModified = true;
+			}
 			explosion.processChunk(BombConfig.mk5);
-		} else if(!explosion.isVaporizationComplete){
-			explosion.vaporizeFluids(radius, BombConfig.mk5);
 		} else {
 			if(fallout) {
 				EntityFalloutUnderGround falloutBall = new EntityFalloutUnderGround(this.world);
@@ -301,5 +311,7 @@ public class EntityNukeExplosionMK5 extends Entity implements IChunkLoader {
 	public void setDead() {
 	    super.setDead();
 		if (explosion != null) explosion.shutdownExecutor();
+		if (doWaterSpreadModified) gameRules.setOrCreateGameRule("doWaterSpread", "true");
+		if (doLavaSpreadModified) gameRules.setOrCreateGameRule("doLavaSpread", "true");
 	}
 }

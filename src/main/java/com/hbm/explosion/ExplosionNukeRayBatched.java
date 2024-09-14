@@ -47,13 +47,6 @@ public class ExplosionNukeRayBatched {
 	double gspX;
 	double gspY;
 
-	private int currentChunkX = Integer.MIN_VALUE; // 记录当前处理到的区块X
-    private int currentChunkZ = Integer.MIN_VALUE; // 记录当前处理到的区块Z
-    private int currentY = minY; // 记录区块中的高度
-    private int currentBx = 0; // 记录区块内的X坐标
-    private int currentBz = 0; // 记录区块内的Z坐标
-    public boolean isVaporizationComplete = false; // 蒸发过程是否完成
-
 	private static final int maxY = 255;
 	private static final int minY = 0;
 
@@ -248,71 +241,6 @@ public class ExplosionNukeRayBatched {
 			needsNewHitArray = true;
 		}
 	}
-	
-	
-    public void vaporizeFluids(int radius, int time) {
-        if (isVaporizationComplete) {
-            return; // 如果已经完成，直接返回
-        }
-
-        long start = System.currentTimeMillis();
-        MutableBlockPos pos = new BlockPos.MutableBlockPos();
-
-        // 如果是第一次执行，初始化 currentChunkX 和 currentChunkZ
-        if (currentChunkX == Integer.MIN_VALUE && currentChunkZ == Integer.MIN_VALUE) {
-            currentChunkX = (posX >> 4) - radius;
-            currentChunkZ = (posZ >> 4) - radius;
-        }
-
-        // 遍历指定半径内的区块
-        for (int x = currentChunkX; x <= (posX >> 4) + radius; x++) {
-            for (int z = currentChunkZ; z <= (posZ >> 4) + radius; z++) {
-                ChunkPos chunkPos = new ChunkPos(x, z);
-
-                // 强制加载区块，确保区块可被处理
-                if (!world.isChunkGeneratedAt(chunkPos.x, chunkPos.z)) {
-                    continue; // 如果区块未生成，跳过
-                }
-                Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z);
-
-                // 遍历区块内的所有方块，从上次中断的位置开始
-                for (int y = currentY; y <= maxY; y++) {
-                    for (int bx = currentBx; bx < 16; bx++) {
-                        for (int bz = currentBz; bz < 16; bz++) {
-                            pos.setPos(chunkPos.getXStart() + bx, y, chunkPos.getZStart() + bz);
-                            IBlockState blockState = chunk.getBlockState(pos);
-                            Block block = blockState.getBlock();
-
-                            // 判断是否为液体
-                            if (block.getMaterial(blockState).isLiquid()) {
-                                // 蒸发液体，将其替换为空气
-                                world.setBlockToAir(pos);
-                                // 这里可以加入更多蒸发效果，比如粒子效果或声音效果
-                            }
-
-                            // 时间限制检查，若超时则中断
-                            if (System.currentTimeMillis() > start + time) {
-                                // 保存当前的处理位置
-                                currentChunkX = x;
-                                currentChunkZ = z;
-                                currentY = y;
-                                currentBx = bx;
-                                currentBz = bz + 1; // 下次从下一个bz开始
-                                return; // 中断并等待下次继续
-                            }
-                        }
-                        currentBz = 0; // 重置bz，下一次从0开始
-                    }
-                    currentBx = 0; // 重置bx，下一次从0开始
-                }
-                currentY = minY; // 重置Y，下一次从最小高度开始
-            }
-            currentChunkZ = (posZ >> 4) - radius; // 重置Z，下一次从最小区块Z开始
-        }
-
-        // 完成所有区块处理，标记为完成
-        isVaporizationComplete = true;
-    }
 	
 	public void readEntityFromNBT(NBTTagCompound nbt) {
 		radius = nbt.getInteger("radius");
