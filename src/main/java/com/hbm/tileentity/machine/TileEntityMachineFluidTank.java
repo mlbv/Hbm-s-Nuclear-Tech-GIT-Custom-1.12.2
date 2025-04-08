@@ -4,11 +4,11 @@ import com.hbm.forgefluid.FFUtils;
 import com.hbm.forgefluid.ModForgeFluids;
 import com.hbm.interfaces.ITankPacketAcceptor;
 import com.hbm.inventory.control_panel.*;
-import com.hbm.main.MainRegistry;
 import com.hbm.packet.FluidTankPacket;
 import com.hbm.packet.PacketDispatcher;
 import com.hbm.tileentity.TileEntityMachineBase;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -36,7 +36,7 @@ public class TileEntityMachineFluidTank extends TileEntityMachineBase implements
 	public short mode = 0;
 	public static final short modes = 4;
 	public int age = 0;
-	public static int[] slots = { 2 };
+	public static int[] slots = { 2, 3 };
 	
 	public TileEntityMachineFluidTank() {
 		super(6);
@@ -191,6 +191,11 @@ public class TileEntityMachineFluidTank extends TileEntityMachineBase implements
 			return tank.getFluid() != null;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack itemStack, int amount){
+		return slot == 3 || slot == 5;
 	}
 
 	@Override

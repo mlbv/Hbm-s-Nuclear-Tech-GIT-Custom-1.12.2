@@ -25,7 +25,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class ExplosionNukeRayBatched {
@@ -41,6 +40,7 @@ public class ExplosionNukeRayBatched {
 
 	int strength;
 	int radius;
+	int radiusSq;
 
 	int gspNumMax;
 	int gspNum;
@@ -53,6 +53,9 @@ public class ExplosionNukeRayBatched {
 	private Future<List<Vec3>> precomputedGspCoordinates;
     private List<Vec3> gspCoordinates; // 存储异步生成的Gsp坐标
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
+	private final ThreadLocal<List<MutableBlockPos>> mutableRayBlocksPool = ThreadLocal.withInitial(ArrayList::new);
+	private final MutableBlockPos reusablePos = new MutableBlockPos(0, 0, 0);
+	private static HashMap<Block, Float> explosionResistanceCache = new HashMap<>();
 
 	public boolean isAusf3Complete = false;
 	public int rayCheckInterval = 100;
@@ -64,7 +67,7 @@ public class ExplosionNukeRayBatched {
 		this.posZ = z;
 		this.strength = strength;
 		this.radius = radius;
-
+		this.radiusSq = radius * radius;
 		// Total number of points
 		this.gspNumMax = (int)(2.5 * Math.PI * Math.pow(this.strength, 2));
 		this.gspNum = 1;
@@ -108,52 +111,57 @@ public class ExplosionNukeRayBatched {
 			if (gspCoordinates == null) {
 				gspCoordinates = precomputedGspCoordinates.get();
 			}
-	
+
 			while (this.gspNumMax >= this.gspNum) {
 				// 获取预生成的Gsp坐标
 				Vec3 vec = gspCoordinates.get(gspNum - 1);
-	
+			
 				int x0 = posX;
 				int y0 = posY;
 				int z0 = posZ;
 				int x1 = posX + (int) (vec.xCoord * radius);
 				int y1 = posY + (int) (vec.yCoord * radius);
 				int z1 = posZ + (int) (vec.zCoord * radius);
-	
-				// 使用 Bresenham 的线算法来处理射线追踪
-				List<BlockPos> rayBlocks = getLineBlocks(x0, y0, z0, x1, y1, z1);
+			
+				// 使用优化后的 Bresenham 算法来处理射线追踪
+				List<MutableBlockPos> rayBlocks = getLineBlocksOptimized(x0, y0, z0, x1, y1, z1);
 				float rayStrength = strength * 0.3F;
-	
+			
 				for (BlockPos pos : rayBlocks) {
 					int iX = pos.getX();
 					int iY = pos.getY();
 					int iZ = pos.getZ();
-	
+			
 					if (iY < minY || iY > maxY) {
 						isContained = false;
 						break;
 					}
-	
+			
 					IBlockState blockState = world.getBlockState(pos);
 					Block block = blockState.getBlock();
-					if (block.getExplosionResistance(null) >= 2_000_000) {
+					if (getCachedExplosionResistance(block) >= 2_000_000) {
 						break;
 					}
-	
-					rayStrength -= Math.pow(getNukeResistance(blockState, block) + 1, 3 * pos.distanceSq(posX, posY, posZ) / (radius * radius)) - 1;
-	
+			
+					// 计算距离的平方，只计算一次
+					double dx = iX - posX;
+					double dy = iY - posY;
+					double dz = iZ - posZ;
+					double distanceSq = dx * dx + dy * dy + dz * dz;
+					rayStrength -= Math.pow(getNukeResistance(blockState, block) + 1, 3 * distanceSq / radiusSq) - 1;
+			
 					if (rayStrength > 0) {
 						if (block != Blocks.AIR) {
 							addPos(iX, iY, iZ); // 将方块位置保存到 `CompressedBlockSet`
 						}
-						if (pos.distanceSq(posX, posY, posZ) >= radius * radius) {
+						if (distanceSq >= radiusSq) {
 							isContained = false;
 						}
 					} else {
 						break;
 					}
 				}
-	
+			
 				raysProcessed++;
 				if (raysProcessed % rayCheckInterval == 0 && System.currentTimeMillis() > start + time) {
 					return; // 超过指定时间，等待下一次调用继续处理
@@ -176,25 +184,23 @@ public class ExplosionNukeRayBatched {
 		} else {
 			if(b == Blocks.SANDSTONE) return 4F;
 			if(b == Blocks.OBSIDIAN) return 18F;
-			return b.getExplosionResistance(null);
+			return getCachedExplosionResistance(b);
 		}
 	}
 	
-	/** little comparator for roughly sorting chunks by distance to the center */
 	public class CoordComparator implements Comparator<ChunkPos> {
 
 		@Override
 		public int compare(ChunkPos o1, ChunkPos o2) {
-
 			int chunkX = ExplosionNukeRayBatched.this.posX >> 4;
 			int chunkZ = ExplosionNukeRayBatched.this.posZ >> 4;
-
-			int diff1 = Math.abs((chunkX - (int) (o1.getXStart() >> 4))) + Math.abs((chunkZ - (int) (o1.getZStart() >> 4)));
-			int diff2 = Math.abs((chunkX - (int) (o2.getXStart() >> 4))) + Math.abs((chunkZ - (int) (o2.getZStart() >> 4)));
-			
-			return diff1 > diff2 ? 1 : diff1 < diff2 ? -1 : 0;
+	
+			int diff1 = Math.abs(chunkX - o1.x) + Math.abs(chunkZ - o1.z);
+			int diff2 = Math.abs(chunkX - o2.x) + Math.abs(chunkZ - o2.z);
+	
+			return Integer.compare(diff1, diff2);
 		}
-	}
+	}	
 
 	public void processChunk(int time){
 		long start = System.currentTimeMillis();
@@ -214,6 +220,7 @@ public class ExplosionNukeRayBatched {
 		}
 		if (this.perChunk.isEmpty()) return;
 		if (needsNewHitArray) {
+			if (orderedChunks.isEmpty()) return;
 			chunk = orderedChunks.get(0);
 			hitArray = perChunk.get(chunk);
 			indexIterator = hitArray.getIndices().iterator();
@@ -223,15 +230,17 @@ public class ExplosionNukeRayBatched {
 		int chunkX = chunk.getXStart();
 		int chunkZ = chunk.getZStart();
 	
-		MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		MutableBlockPos pos = new MutableBlockPos(0, 0, 0);
 		int blocksRemoved = 0;
 		while (indexIterator.hasNext()) {
 			int index = indexIterator.next();
 			pos.setPos(((index >> 4) % 16) + chunkX, 255 - (index >> 8), (index % 16) + chunkZ);
 			world.setBlockToAir(pos);
 			blocksRemoved++;
-			if (blocksRemoved % 256 == 0 && System.currentTimeMillis() > start + time) {
-				break;
+			if (blocksRemoved % 256 == 0) {
+				if (System.currentTimeMillis() > start + time) {
+					break;
+				}
 			}
 		}
 	
@@ -240,7 +249,7 @@ public class ExplosionNukeRayBatched {
 			orderedChunks.remove(0);
 			needsNewHitArray = true;
 		}
-	}
+	}	
 	
 	public void readEntityFromNBT(NBTTagCompound nbt) {
 		radius = nbt.getInteger("radius");
@@ -380,8 +389,9 @@ public class ExplosionNukeRayBatched {
 		}
 	}
 
-	private List<BlockPos> getLineBlocks(int x0, int y0, int z0, int x1, int y1, int z1) {
-		List<BlockPos> result = new ArrayList<>();
+	private List<MutableBlockPos> getLineBlocksOptimized(int x0, int y0, int z0, int x1, int y1, int z1) {
+		List<MutableBlockPos> result = mutableRayBlocksPool.get();
+		result.clear();
 	
 		int dx = Math.abs(x1 - x0);
 		int dy = Math.abs(y1 - y0);
@@ -391,65 +401,69 @@ public class ExplosionNukeRayBatched {
 		int ys = y0 < y1 ? 1 : -1;
 		int zs = z0 < z1 ? 1 : -1;
 	
-		if (dx >= dy && dx >= dz) {
-			int p1 = 2 * dy - dx;
-			int p2 = 2 * dz - dx;
+		int p1, p2;
+		int currentX = x0, currentY = y0, currentZ = z0;
 	
-			while (x0 != x1) {
-				x0 += xs;
+		if (dx >= dy && dx >= dz) {
+			p1 = 2 * dy - dx;
+			p2 = 2 * dz - dx;
+			while (currentX != x1) {
+				currentX += xs;
 				if (p1 >= 0) {
-					y0 += ys;
+					currentY += ys;
 					p1 -= 2 * dx;
 				}
 				if (p2 >= 0) {
-					z0 += zs;
+					currentZ += zs;
 					p2 -= 2 * dx;
 				}
 				p1 += 2 * dy;
 				p2 += 2 * dz;
-	
-				result.add(new BlockPos(x0, y0, z0));
+				reusablePos.setPos(currentX, currentY, currentZ);
+				result.add(new MutableBlockPos(reusablePos.getX(), reusablePos.getY(), reusablePos.getZ()));
 			}
 		} else if (dy >= dx && dy >= dz) {
-			int p1 = 2 * dx - dy;
-			int p2 = 2 * dz - dy;
-	
-			while (y0 != y1) {
-				y0 += ys;
+			p1 = 2 * dx - dy;
+			p2 = 2 * dz - dy;
+			while (currentY != y1) {
+				currentY += ys;
 				if (p1 >= 0) {
-					x0 += xs;
+					currentX += xs;
 					p1 -= 2 * dy;
 				}
 				if (p2 >= 0) {
-					z0 += zs;
+					currentZ += zs;
 					p2 -= 2 * dy;
 				}
 				p1 += 2 * dx;
 				p2 += 2 * dz;
-	
-				result.add(new BlockPos(x0, y0, z0));
+				reusablePos.setPos(currentX, currentY, currentZ);
+				result.add(new MutableBlockPos(reusablePos.getX(), reusablePos.getY(), reusablePos.getZ()));
 			}
 		} else {
-			int p1 = 2 * dy - dz;
-			int p2 = 2 * dx - dz;
-	
-			while (z0 != z1) {
-				z0 += zs;
+			p1 = 2 * dy - dz;
+			p2 = 2 * dx - dz;
+			while (currentZ != z1) {
+				currentZ += zs;
 				if (p1 >= 0) {
-					y0 += ys;
+					currentY += ys;
 					p1 -= 2 * dz;
 				}
 				if (p2 >= 0) {
-					x0 += xs;
+					currentX += xs;
 					p2 -= 2 * dz;
 				}
 				p1 += 2 * dy;
 				p2 += 2 * dx;
-	
-				result.add(new BlockPos(x0, y0, z0));
+				reusablePos.setPos(currentX, currentY, currentZ);
+				result.add(new MutableBlockPos(reusablePos.getX(), reusablePos.getY(), reusablePos.getZ()));
 			}
 		}
 	
 		return result;
+	}
+
+	private static float getCachedExplosionResistance(Block block) {
+		return explosionResistanceCache.computeIfAbsent(block, b -> b.getExplosionResistance(null));
 	}
 }

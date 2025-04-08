@@ -406,7 +406,7 @@ public class RadiationSystemNT {
 						if(eRad > 2500000)
 							HbmLivingProps.setRadiation(entity, 2500000);
 
-						if(eRad >= 4000) {
+						if(eRad >= 2500) {
 							entity.attackEntityFrom(ModDamageSource.radiation, 1000F);
 							HbmLivingProps.setRadiation(entity, 0);
 
